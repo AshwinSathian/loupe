@@ -1,0 +1,29 @@
+name: Script or install problem
+description: A bundled script crashed or gave a wrong number, or the skill didn't install or load
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command or request, what you expected, and what you got. Paste error text as text, not a screenshot.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: A URL, a small HTML file, or the values passed to the script.
+  - type: input
+    id: version
+    attributes:
+      label: loupe version
+      description: From .claude-plugin/plugin.json, or the commit if you cloned.
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Claude Code version, OS, Python and Node versions, browser if a measurement was wrong.
