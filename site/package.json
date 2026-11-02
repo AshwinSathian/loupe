@@ -13,10 +13,10 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.9.0",
-    "wrangler": "^4.130.0"
+    "typescript": "^7.0.2",
+    "wrangler": "^4.156.0"
   }
 }
