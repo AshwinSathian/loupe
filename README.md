@@ -1,6 +1,6 @@
 # loupe
 
-[![CI](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml/badge.svg)](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/github/license/AshwinSathian/loupe)](LICENSE) [![Release](https://img.shields.io/github/v/release/AshwinSathian/loupe)](https://github.com/AshwinSathian/loupe/releases)
+[![CI](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml/badge.svg)](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/github/license/AshwinSathian/loupe)](LICENSE) [![Release](https://img.shields.io/github/v/release/AshwinSathian/loupe)](https://github.com/AshwinSathian/loupe/releases) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/AshwinSathian/loupe/badge)](https://scorecard.dev/viewer/?uri=github.com/AshwinSathian/loupe)
 
 loupe is a Claude Code skill that reviews UI and UX against Apple's Human Interface Guidelines and the research around them. It measures what it can in the running app, says how strongly Apple states each rule it cites, and flags interfaces that look like every other template. It covers iOS, iPadOS, macOS, iPhone Duo and the web, in SwiftUI, UIKit, React, Next.js, React Native, Expo, Angular, Vue or plain HTML.
 
@@ -90,6 +90,10 @@ site/                      the website (not part of the skill)
 The digests paraphrase a snapshot of the HIG taken on 23 October 2026, with short attributed quotations. The maintainer refreshes them by hand against developer.apple.com; the repo does not ship a crawler. To check that no number was lost when a reference file is edited: `python3 -I tools/check_numbers.py research/digests/<digest>.md references/<file>.md --allow tools/allow/<file>.txt`. After editing a reference file, run `python3 -I tools/toc.py` to refresh its contents line.
 
 If a rule is wrong or out of date, [open an issue](https://github.com/AshwinSathian/loupe/issues/new/choose) with the Apple page and what it says now.
+
+## Contributing
+
+Reports of wrong findings and outdated rules help most. [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, the checks a reference edit needs, and what the project won't take. Questions go to [Discussions](https://github.com/AshwinSathian/loupe/discussions). Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 

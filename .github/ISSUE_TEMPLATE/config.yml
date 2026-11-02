@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/AshwinSathian/loupe/discussions
+    about: How to use loupe, what a finding means, or a proposal for something new.
+  - name: Security problem
+    url: https://github.com/AshwinSathian/loupe/security/advisories/new
+    about: Report privately. Don't open a public issue.
