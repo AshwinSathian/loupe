@@ -24,6 +24,27 @@ def test_check_numbers_allow_and_utf8(tmp):
     allow = w(tmp, "a.txt", "4.5:1")
     r = run(f"{T}/check_numbers.py", w(tmp, "d.md", "44×44 pt — 4.5:1"), w(tmp, "r.md", "44×44 pt"), "--allow", allow)
     assert r.returncode == 0, (r.stdout, r.stderr)
+def test_sync_extension(tmp):
+    import shutil
+    root = os.path.join(tmp, "repo"); os.makedirs(os.path.join(root, "tools")); os.makedirs(os.path.join(root, "references")); os.makedirs(os.path.join(root, "scripts")); os.makedirs(os.path.join(root, "bin")); os.makedirs(os.path.join(root, "lib"))
+    shutil.copy(f"{T}/sync_extension.py", os.path.join(root, "tools", "sync_extension.py"))
+    w(root, "SKILL.md", "skill"); w(root, "package.json", json.dumps({"version": "1.2.3"}))
+    w(os.path.join(root, "references"), "a.md", "a"); w(os.path.join(root, "scripts"), "s.js", "s"); w(os.path.join(root, "bin"), "b.mjs", "b"); w(os.path.join(root, "lib"), "l.mjs", "l")
+    w(root, "gemini-extension.json", json.dumps({"name": "x", "version": "0.0.1"}))
+    s = os.path.join(root, "tools", "sync_extension.py")
+    r = run(s, "--check")
+    assert r.returncode == 1 and "skills/loupe/SKILL.md" in r.stdout and "0.0.1 != package.json 1.2.3" in r.stdout, r.stdout
+    assert run(s).returncode == 0
+    assert json.load(open(os.path.join(root, "gemini-extension.json")))["version"] == "1.2.3"
+    assert run(s, "--check").returncode == 0, "fresh copy must be current"
+    w(os.path.join(root, "references"), "a.md", "changed")
+    r = run(s, "--check"); assert r.returncode == 1 and "references/a.md" in r.stdout, r.stdout
+    run(s)
+    w(os.path.join(root, "skills", "loupe"), "stray.txt", "x")
+    r = run(s, "--check"); assert r.returncode == 1 and "stray.txt" in r.stdout, r.stdout
+    assert run(s, "--bogus").returncode == 2
+def test_sync_extension_repo_is_current(tmp):
+    r = run(f"{T}/sync_extension.py", "--check"); assert r.returncode == 0, r.stdout
 def test_check_numbers_help_and_errors(tmp):
     assert run(f"{T}/check_numbers.py", "--help").returncode == 0
     r = run(f"{T}/check_numbers.py")
