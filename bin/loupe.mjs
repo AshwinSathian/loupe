@@ -2,14 +2,12 @@
 // loupe CLI: runs loupe's measurement scripts on one or more pages without a model.
 // Usage: loupe [measure] <url>... [options]; `loupe --help` lists the options.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { platform, arch } from "node:os";
-import vm from "node:vm";
+import { runScript } from "../lib/runner.mjs";
 import { createRequire } from "node:module";
 import { toFindings, diff, mdEscape, mdCode } from "../lib/findings.mjs";
 
-const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 const HELP = `loupe ${VERSION}: measure pages the way a loupe review does, without a model.
 
@@ -77,12 +75,8 @@ let browser;
 try { browser = await pw[o.browser].launch(); }
 catch (e) { die(`could not start ${o.browser}. Install the build this Playwright (${pwVersion}) expects: npx -y playwright@${pwVersion} install ${o.browser}\n${e.message.split("\n")[0]}`); }
 
-// Runners are read and run the way the skill runs them through Playwright MCP: a vm context holding
-// only `page`, the runner text unchanged.
-const runner = (name, page, opts) => {
-  const code = `async (page) => (${readFileSync(`${ROOT}scripts/${name}`, "utf8")})(page, ${JSON.stringify({ skillDir: ROOT, ...opts })})`;
-  return vm.runInContext(`(${code})`, vm.createContext({ page }))(page).then((r) => JSON.parse(JSON.stringify(r)));
-};
+// Runners run the way the skill runs them through Playwright MCP (lib/runner.mjs).
+const runner = runScript;
 
 const env = { tool: `loupe ${VERSION}`, browser: `${o.browser} ${browser.version()}`, playwright: pwVersion, platform: `${platform()}-${arch()}` };
 const pages = {};

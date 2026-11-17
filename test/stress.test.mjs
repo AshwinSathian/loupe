@@ -2,7 +2,7 @@ import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import vm from "node:vm";
+import { runScript } from "../lib/runner.mjs";
 import { chromium } from "playwright";
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
@@ -13,8 +13,7 @@ after(() => browser.close());
 
 async function stress(fixture, opts = {}) {
   await page.setContent(read(`./fixtures/${fixture}.html`));
-  const code = `async (page) => (${read("../scripts/stress-runner.js")})(page, ${JSON.stringify({ skillDir, ...opts })})`;
-  return JSON.parse(JSON.stringify(await vm.runInContext("(" + code + ")", vm.createContext({ page }))(page)));
+  return runScript("stress-runner.js", page, opts);
 }
 const run = (out, mode, width) => out.find((r) => r.mode === mode && (!width || r.width === width));
 

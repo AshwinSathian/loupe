@@ -1,7 +1,7 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import vm from "node:vm";
+import { runScript } from "../lib/runner.mjs";
 import { chromium } from "playwright";
 
 const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
@@ -12,9 +12,7 @@ after(() => browser.close());
 // Run the way Playwright MCP's browser_run_code_unsafe does: a vm context holding only `page`.
 async function walk(fixture, opts = {}) {
   await page.setContent(read(`./fixtures/${fixture}.html`));
-  const code = `async (page) => (${read("../scripts/interact-runner.js")})(page, ${JSON.stringify(opts)})`;
-  // JSON round trip: arrays made in the vm context have another realm's prototype.
-  return JSON.parse(JSON.stringify(await vm.runInContext("(" + code + ")", vm.createContext({ page }))(page)));
+  return runScript("interact-runner.js", page, opts);
 }
 const sels = (list) => list.map((x) => x.selector || x);
 

@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import vm from "node:vm";
+import { runScript } from "../../lib/runner.mjs";
 import { chromium } from "playwright";
 import { toFindings } from "../../lib/findings.mjs";
 
@@ -31,10 +31,7 @@ if (!res.ok) { console.error(`cannot fetch ${INDEX}: ${res.status}`); process.ex
 const index = await res.json();
 const cases = index.testcases.filter((t) => RULES[t.ruleId] && t.approved !== false && /^https:\/\/www\.w3\.org\//.test(t.url));
 
-const runner = (name, page, opts) => {
-  const code = `async (page) => (${readFileSync(`${ROOT}scripts/${name}`, "utf8")})(page, ${JSON.stringify({ skillDir: ROOT, ...opts })})`;
-  return vm.runInContext(`(${code})`, vm.createContext({ page }))(page).then((r) => JSON.parse(JSON.stringify(r)));
-};
+const runner = (name, page, opts) => runScript(name, page, opts);
 const browser = await chromium.launch();
 const rows = [];
 try {

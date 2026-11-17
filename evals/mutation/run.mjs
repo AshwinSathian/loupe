@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import vm from "node:vm";
+import { runScript } from "../../lib/runner.mjs";
 import { chromium } from "playwright";
 import { toFindings } from "../../lib/findings.mjs";
 
@@ -33,10 +33,7 @@ const patch = (op) => {
   if (op.script) h = h.replace("</body>", `<script>${op.script}</script>\n</body>`);
   return h;
 };
-const runner = (name, page, opts) => {
-  const code = `async (page) => (${readFileSync(`${ROOT}scripts/${name}`, "utf8")})(page, ${JSON.stringify({ skillDir: ROOT, ...opts })})`;
-  return vm.runInContext(`(${code})`, vm.createContext({ page }))(page).then((r) => JSON.parse(JSON.stringify(r)));
-};
+const runner = (name, page, opts) => runScript(name, page, opts);
 
 const browser = await chromium.launch();
 const engine = async (html) => {

@@ -32,5 +32,5 @@ test("every script and reference SKILL.md and the workflow files name exists", (
 test("plugin, marketplace and package versions agree", () => {
   const v = JSON.parse(read("package.json")).version;
   assert.equal(JSON.parse(read(".claude-plugin/plugin.json")).version, v);
-  assert.match(read("CHANGELOG.md"), new RegExp(`^## ${v.replace(/\./g, "\\.")} `, "m"));
+  assert.match(read("CHANGELOG.md"), new RegExp(`^## ${v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} `, "m"));
 });
