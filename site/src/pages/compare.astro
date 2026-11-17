@@ -8,6 +8,10 @@ const description =
   'When to pick axe-core, Lighthouse, Pa11y, Impeccable, Anthropic’s frontend-design or Vercel’s web-design-guidelines instead of loupe, what loupe does that they don’t document, and what it doesn’t do. Checked 17 November 2026.'
 // docs/comparison.md is the source; its first heading is this page's h1.
 const body = readRepo('docs/comparison.md').replace(/^# .*\n+/, '')
+// The tool name is the row header, and the scrolling table box has a name for screen readers.
+const rendered = html(body)
+  .replace(/<tr>\n<td>(.*?)<\/td>/g, '<tr>\n<th scope="row">$1</th>')
+  .replace('<div class="table-wrap" tabindex="0">', '<div class="table-wrap" tabindex="0" role="region" aria-label="Comparison of tools">')
 ---
 
 <Base
@@ -21,6 +25,6 @@ const body = readRepo('docs/comparison.md').replace(/^# .*\n+/, '')
     <h1>How loupe compares</h1>
     <p class="lede">Which tool to pick, and when it isn’t this one.</p>
   </header>
-  <div class="prose compare" set:html={html(body)} />
+  <div class="prose compare" set:html={rendered} />
   <p class="muted">Source: <a href={blob('docs/comparison.md')}>docs/comparison.md</a>.</p>
 </Base>

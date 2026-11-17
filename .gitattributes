@@ -1,5 +1,2 @@
 # The website is not the skill. Keep it out of GitHub language stats.
 site/** linguist-vendored
-
-# skills/loupe/ is a generated copy of the skill for the Gemini CLI extension (tools/sync_extension.py).
-skills/loupe/** linguist-generated

@@ -29,14 +29,13 @@ test("every script and reference SKILL.md and the workflow files name exists", (
   for (const p of paths) assert.ok(existsSync(new URL(p, root)), `${p} is named but missing`);
 });
 
-test("Gemini extension manifest is valid and its skill copy is the skill", () => {
+test("Gemini extension manifest is valid, and no copy of the skill is committed under skills/", () => {
   const m = JSON.parse(read("gemini-extension.json"));
   assert.match(m.name, /^[a-z0-9-]+$/); // Gemini CLI: lowercase letters, numbers, dashes
   assert.equal(m.version, JSON.parse(read("package.json")).version);
   assert.ok(m.description.length > 20);
-  assert.equal(read("skills/loupe/SKILL.md"), skill);
-  assert.ok(existsSync(new URL("skills/loupe/references/workflow-intake.md", root)));
-  assert.ok(!existsSync(new URL("skills/loupe/skills", root)), "no nested copy");
+  // A committed skills/loupe/ would be installed inside the skill by `npx skills add` and listed twice by Codex.
+  assert.ok(!existsSync(new URL("skills", root)), "skills/ must not exist; the extension ships as a release asset");
 });
 
 test("plugin, marketplace and package versions agree", () => {

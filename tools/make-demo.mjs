@@ -38,7 +38,7 @@ const rows = lines.filter((l) => /^\| (fail|warn) \|/.test(l)).map((l) => {
 });
 const fails = rows.filter((r) => r.sev === "fail");
 const warns = rows.length - fails.length;
-const cmd = `npx -y loupe-review@2 ${SHOWN_URL} --only measure,interact`;
+const cmd = `npx -y loupe-review@2 ${SHOWN_URL} --only measure,interact --widths 1440`;
 const exitLine = `exit ${run.status}`;
 
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
