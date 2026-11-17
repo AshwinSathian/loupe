@@ -1,8 +1,8 @@
 async (page, opts = {}) => {
   // HOW TO RUN (Playwright MCP, one browser_run_code_unsafe call), the same way as measure-runner.js:
   //   async (page) => (<RUNNER>)(page, { maxStops: 80 })
-  // Walks the keyboard with real Tab presses from the top of the page (or from an element that already
-  // has focus, such as an open modal's first control) and reports for each stop:
+  // Walks the keyboard with real Tab presses from the top of the page (or, inside an open modal dialog,
+  // from the element that has focus) and reports for each stop:
   //   selector, role and accessible name (the first line of Playwright's aria snapshot of the focused
   //   element); whether focus changes anything visible (outline, box-shadow, border, background, colour,
   //   text decoration or transform on the element or either of its two nearest ancestors, which covers
@@ -11,11 +11,12 @@ async (page, opts = {}) => {
   // Also: keyboard traps (WCAG 2.1.2: focus stays put for 3 presses, or wraps back to a stop other than
   //   the first; a cycle inside an open modal dialog is expected and reported with inDialog: true). After
   //   a trap the walk focuses the next element after it and continues (walkContinued), up to 3 traps;
-  //   `trap` is the first, `traps` all of them.
-  //   positive tabindex values, and unnamed controls and images anywhere in the page (counted per role
-  //   from the page's aria snapshot, which carries no selectors; focusable ones are named per stop).
-  // Options: maxStops (default 80), timeMs (default 15000), settleMs (wait after each key, default 60), width (viewport width for the walk), key
-  //   (default Tab; Alt+Tab in WebKit, which otherwise skips links and buttons as Safari does).
+  //   `trap` is the first, `traps` all of them. Also: positive tabindex values, and unnamed controls and
+  //   images anywhere in the page (counted per role from the page's aria snapshot, which carries no
+  //   selectors; focusable ones are named per stop).
+  // Options: maxStops (default 80), timeMs (default 15000), settleMs (wait after each key, default 60),
+  //   width (viewport width for the walk), key (default Tab; Alt+Tab in WebKit, which otherwise skips
+  //   links and buttons as Safari does).
   // Side effects: focus moves (the page's focus and blur handlers run, as for a keyboard user) and the
   //   page scrolls. Nothing is clicked or typed. Focus is released and the scroll position and viewport
   //   are restored at the end.
@@ -145,7 +146,7 @@ async (page, opts = {}) => {
       }
       stuck = 0;
       if (seen.has(p.selector)) {
-        // Wrapped. Back to the first stop is a normal cycle; back to a later one is a trap.
+        // Wrapped: back to a later stop is a trap.
         const at = seen.get(p.selector);
         // Back to the first stop is the end of a normal cycle, unless tabbable elements the walk never
         // reached remain: then the cycle itself is the trap (two elements passing focus back and forth).
