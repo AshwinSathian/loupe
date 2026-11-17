@@ -5,6 +5,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
+import { withoutBlocks } from './html.mjs'
 
 const DIST = 'dist'
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]))
@@ -37,13 +38,13 @@ for (const file of pages) {
     for (const [, json] of blocks) JSON.parse(json)
   })
   test(`${name}: no inline script (the CSP forbids it)`, () => {
-    for (const [, attrs, body] of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
+    for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
       if (/application\/ld\+json/.test(attrs)) continue
       assert.ok(/\ssrc="/.test(attrs) && body.trim() === '', `inline script: ${body.slice(0, 60)}`)
     }
   })
   test(`${name}: no link glued to the word before or after it`, () => {
-    const body = html.replace(/<(script|style)[\s\S]*?<\/\1>/g, '')
+    const body = withoutBlocks(html)
     const glued = [...body.matchAll(/[A-Za-z0-9)](<a[ >][^>]*>[^<]*)|(<\/a>)[A-Za-z(]/g)].map((m) => m[0].slice(0, 40))
     assert.deepEqual(glued, [])
   })

@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import zlib from 'node:zlib'
+import { withoutBlocks, withoutTags } from './html.mjs'
 
 const DIST = 'dist'
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]))
@@ -67,8 +68,8 @@ test('every character on every page is in the cut of the face that draws it', ()
   for (const p of pages) {
     const html = fs.readFileSync(p, 'utf8')
     // Code is <pre>, <code> and <kbd>; the checker's text inputs are code too, but hold no static text.
-    const code = new Set([...html.matchAll(/<(pre|code|kbd)[^>]*>([\s\S]*?)<\/\1>/g)].flatMap((m) => [...decode(m[2].replace(/<[^>]+>/g, ''))]))
-    const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' '))
+    const code = new Set([...html.matchAll(/<(pre|code|kbd)[^>]*>([\s\S]*?)<\/\1>/g)].flatMap((m) => [...decode(withoutTags(m[2]))]))
+    const text = decode(withoutTags(withoutBlocks(html)))
     const missing = [...new Set([...text].filter((c) => !/\s/.test(c) && !cut.has(c.codePointAt(0)) && !SYSTEM_DRAWN.has(c) && !(code.has(c) && mono.has(c.codePointAt(0)))))]
     assert.deepEqual(missing, [], `${p}: not in a font cut (add to tools/cut-fonts.sh and rerun it): ${missing.join(' ')}`)
   }
