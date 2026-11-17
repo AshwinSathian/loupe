@@ -8,5 +8,5 @@ const loop = (s, f) => {
   } while (s !== prev)
   return s
 }
-export const withoutBlocks = (html) => loop(html, (s) => s.replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, ' '))
+export const withoutBlocks = (html) => loop(html, (s) => s.replace(/<(script|style)\b[\s\S]*?<\/\1[^>]*>/gi, ' '))
 export const withoutTags = (html) => loop(html, (s) => s.replace(/<[^>]*>/g, ' '))

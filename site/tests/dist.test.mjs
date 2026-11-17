@@ -38,7 +38,7 @@ for (const file of pages) {
     for (const [, json] of blocks) JSON.parse(json)
   })
   test(`${name}: no inline script (the CSP forbids it)`, () => {
-    for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
+    for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script[^>]*>/gi)) {
       if (/application\/ld\+json/.test(attrs)) continue
       assert.ok(/\ssrc="/.test(attrs) && body.trim() === '', `inline script: ${body.slice(0, 60)}`)
     }
