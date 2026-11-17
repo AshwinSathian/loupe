@@ -1,0 +1,196 @@
+{
+  "date": "2026-11-17",
+  "commit": "493b92c",
+  "engine": "chromium 156.0.8078.4",
+  "base_clean": true,
+  "defects": {
+    "total": 12,
+    "detected": 12
+  },
+  "decoys": {
+    "total": 8,
+    "clean": 8
+  },
+  "rows": [
+    {
+      "id": "base",
+      "kind": "base",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "contrast-4.48",
+      "kind": "defect",
+      "rule": "contrast",
+      "pass": true,
+      "found": [
+        "contrast:fail"
+      ]
+    },
+    {
+      "id": "contrast-dark-only",
+      "kind": "defect",
+      "rule": "contrast",
+      "pass": true,
+      "found": [
+        "contrast:fail"
+      ]
+    },
+    {
+      "id": "target-23",
+      "kind": "defect",
+      "rule": "target-size",
+      "pass": true,
+      "found": [
+        "target-size:fail",
+        "reflow-overflows:warn"
+      ]
+    },
+    {
+      "id": "name-removed",
+      "kind": "defect",
+      "rule": "name",
+      "pass": true,
+      "found": [
+        "name:fail"
+      ]
+    },
+    {
+      "id": "focus-outline-none",
+      "kind": "defect",
+      "rule": "focus-visible",
+      "pass": true,
+      "found": [
+        "focus-visible:warn"
+      ]
+    },
+    {
+      "id": "sticky-cover",
+      "kind": "defect",
+      "rule": "focus-obscured",
+      "pass": true,
+      "found": [
+        "focus-obscured:fail"
+      ]
+    },
+    {
+      "id": "trap",
+      "kind": "defect",
+      "rule": "keyboard-trap",
+      "pass": true,
+      "found": [
+        "keyboard-trap:fail"
+      ]
+    },
+    {
+      "id": "fixed-width",
+      "kind": "defect",
+      "rule": "reflow-page-scroll",
+      "pass": true,
+      "found": [
+        "reflow-page-scroll:warn"
+      ]
+    },
+    {
+      "id": "nowrap-tabs",
+      "kind": "defect",
+      "rule": "pseudo-clipped",
+      "pass": true,
+      "found": [
+        "pseudo-clipped:warn",
+        "reflow-clipped:warn"
+      ]
+    },
+    {
+      "id": "fixed-height",
+      "kind": "defect",
+      "rule": "spacing-clipped",
+      "pass": true,
+      "found": [
+        "pseudo-clipped:warn",
+        "spacing-clipped:warn"
+      ]
+    },
+    {
+      "id": "px-text",
+      "kind": "defect",
+      "rule": "text-fixed-px",
+      "pass": true,
+      "found": [
+        "text-fixed-px:warn"
+      ]
+    },
+    {
+      "id": "positive-tabindex",
+      "kind": "defect",
+      "rule": "positive-tabindex",
+      "pass": true,
+      "found": [
+        "positive-tabindex:warn"
+      ]
+    },
+    {
+      "id": "decoy-contrast-4.54",
+      "kind": "decoy",
+      "rule": "contrast",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "decoy-target-24",
+      "kind": "decoy",
+      "rule": "target-size",
+      "pass": true,
+      "found": [
+        "reflow-overflows:warn",
+        "target-goal:warn"
+      ]
+    },
+    {
+      "id": "decoy-lone-small",
+      "kind": "decoy",
+      "rule": "target-size",
+      "pass": true,
+      "found": [
+        "target-goal:warn"
+      ]
+    },
+    {
+      "id": "decoy-labelled-icon",
+      "kind": "decoy",
+      "rule": "name",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "decoy-focus-within",
+      "kind": "decoy",
+      "rule": "focus-visible",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "decoy-modal",
+      "kind": "decoy",
+      "rule": "keyboard-trap",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "decoy-wide-table",
+      "kind": "decoy",
+      "rule": "reflow-page-scroll",
+      "pass": true,
+      "found": []
+    },
+    {
+      "id": "decoy-partly-covered",
+      "kind": "decoy",
+      "rule": "focus-obscured",
+      "pass": true,
+      "found": [
+        "focus-partly-obscured:warn"
+      ]
+    }
+  ]
+}

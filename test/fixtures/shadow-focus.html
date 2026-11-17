@@ -1,0 +1,3 @@
+<!doctype html><html><body><a href="#a">Before</a><x-bar id="x"></x-bar>
+<script>customElements.define('x-bar', class extends HTMLElement { constructor() { super(); this.attachShadow({ mode: 'open' }).innerHTML = [1,2,3,4,5].map((n) => `<button>Item ${n}</button>`).join(''); } });</script>
+</body></html>

@@ -27,7 +27,7 @@ Points to pixels: treat 1 pt as about 1 CSS px. Apple point values carry over as
 ## Color, contrast, preferences
 
 - [MUST] Web: WCAG 2 ratios are the pass/fail floor: 4.5:1 body text, 3:1 large text and non-text (icons, borders, focus rings, control boundaries).
-- [SHOULD] Web: APCA is an extra check, run for dark mode and thin weights (300 and below) and small text. WCAG 2 stays the compliance floor and APCA never replaces it; when WCAG passes but the text sits below the APCA row for its size and weight, it is a finding (accessibility: the stricter source wins). 
+- [SHOULD] Web: APCA is an extra check, run for dark mode and thin weights (300 and below) and small text. WCAG 2 stays the compliance floor and APCA never replaces it; APCA is not normative in the WCAG 3 Working Draft (3 March 2026) and its thresholds may change, so an APCA shortfall on text that passes WCAG 2 is advisory: Research column, Minor at most, never a Blocker, and only with an Lc computed by a named tool on the measured colours (never estimated by eye). 
 - [SHOULD] Web: respect `prefers-color-scheme`, `prefers-reduced-motion` and `prefers-contrast`. Reduced motion removes parallax, large translations and auto-play; keep opacity changes.
 - [SHOULD] Web: declare `color-scheme: light dark` on `:root` (or the meta tag). WebKit never auto-darkens; without it controls and scrollbars stay light. Do not hard-code system default colors; they change under high contrast. Source: beyond-hig, Web (WebKit), Dark Mode in WebKit 2019.
 - [SHOULD] Web: dark palettes via CSS variables; imagery via `<picture><source media="(prefers-color-scheme: dark)">`; icons on `currentColor`; no broad `filter: invert()` over sections.

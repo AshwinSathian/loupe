@@ -475,6 +475,9 @@ main {
 
 /* ---------- tables and data ---------- */
 
+.act { table-layout: fixed; }
+.act th:first-child { width: 56%; }
+.act td + td { white-space: nowrap; }
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--hair);

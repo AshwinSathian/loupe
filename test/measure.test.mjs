@@ -107,6 +107,17 @@ test("contrast: ancestor opacity reduces contrast; opacity 0 skipped", async () 
   assert.equal(by(c, "#gone"), undefined);
 });
 
+test("defaults: gradient text and glow shadows on a dark page", async () => {
+  const r = await measure("glow");
+  assert.match(tells(r), /gradient text \(background-clip: text\) :: #hero: "Build faster"/);
+  assert.match(tells(r), /glow shadows on a dark page \(3 elements\)/);
+});
+
+test("defaults: the same glow on a light page and a plain heading are not flagged", async () => {
+  const r = await measure("glow-light");
+  assert.doesNotMatch(tells(r), /gradient text|glow shadows/);
+});
+
 test("defaults: Tailwind v3 and v4 ramps", async () => {
   assert.match(tells(await measure("ramp-v3")), /slate \(v3\) ramp/);
   assert.match(tells(await measure("ramp-v4")), /gray \(v4\) ramp/);
@@ -214,6 +225,15 @@ test("runner: { full: true } covers 3 widths x 2 schemes x 2 motion prefs", asyn
   assert.equal(by(pick("dark", "no-preference").contrast, "#t").ratio, 21);
   assert.match(pick("light", "no-preference").motion.animatedOnLoad.join(), /#a/);
   assert.equal(pick("light", "reduce").motion.animatedOnLoad.length, 0);
+});
+
+test("runner: scroll-driven animations do not break it; the page's own play-state rules still work afterwards", async () => {
+  await page.setContent(read("./fixtures/anim-state.html"));
+  const out = await runRunner({ full: true, widths: [390] });
+  assert.equal(out.length, 4);
+  assert.equal(await page.evaluate(() => document.getElementById("a").getAttribute("style")), "color:#222");
+  const state = await page.evaluate(() => { const a = document.getElementById("a"); a.classList.add("held"); return a.getAnimations()[0].playState; });
+  assert.equal(state, "paused");
 });
 
 test("runner: compact default keeps only failing rows, deduped, under 20 KB", async () => {

@@ -1,8 +1,35 @@
 {
   "name": "loupe",
+  "version": "2.0.0",
+  "description": "Measures pages the way a loupe design review does: contrast, targets, keyboard focus, names, reflow, text spacing and localization stress.",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test test/*.test.mjs && python3 -I test/test_png_contrast.py && python3 -I test/test_contrast.py && python3 -I tools/test_tools.py" },
-  "engines": { "node": ">=20" },
-  "devDependencies": { "playwright": "^1.50.0" }
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AshwinSathian/loupe.git"
+  },
+  "bin": {
+    "loupe": "bin/loupe.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "scripts",
+    "SKILL.md",
+    "references",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs && for t in test/test_*.py tools/test_tools.py; do python3 -I \"$t\" || exit 1; done",
+    "eval:mutation": "node evals/mutation/run.mjs",
+    "eval:act": "node evals/act/run.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright": "1.64.1"
+  }
 }

@@ -7,9 +7,11 @@ async (page, opts = {}) => {
   //   Add full: true for every row of every combination: { skillDir: "...", full: true }.
   // The runner reads <skillDir>/scripts/measure.js through a detached file input (the code runs in a
   // vm context holding only `page`, with no require or fs) and evaluates it with page.evaluate, which
-  // strict CSP and Trusted Types do not block. It injects no <script> and leaves no globals or nodes.
+  // strict CSP and Trusted Types do not block. It injects no <script> and leaves no globals or nodes
+  // (an expando on each paused Animation object is deleted when it resumes).
   //
   // It measures widths 390, 820, 1440 x colorScheme light, dark x reducedMotion no-preference, reduce,
+  // holding running animations at their first frame while measuring and resuming them afterwards,
   // waiting two animation frames after each media/viewport change so matchMedia and resize listeners
   // (JS-applied themes, responsive classes) have run, and finishing CSS transitions they started.
   //
@@ -49,15 +51,49 @@ async (page, opts = {}) => {
   const vp = page.viewportSize();
   const out = [];
   try {
-    for (const width of [390, 820, 1440])
+    for (const width of opts.widths || [390, 820, 1440])
       for (const colorScheme of ["light", "dark"])
         for (const reducedMotion of ["no-preference", "reduce"]) {
           await page.setViewportSize({ width, height: vp ? vp.height : 900 });
           await page.emulateMedia({ colorScheme, reducedMotion });
           await settle();
           // Jump colour/layout transitions triggered by the media change to their end state.
-          await page.evaluate(() => { for (const a of document.getAnimations()) if (a instanceof CSSTransition) a.finish(); });
-          out.push({ width, colorScheme, reducedMotion, ...(await page.evaluate(`(${src})()`)) });
+          // Then hold running animations at their start for the measurement and resume them after, so a
+          // spinning or sliding element is measured in the same place every run.
+          // CSS animations are paused through the element's inline animation-play-state, never pause()
+          // or play(), which would override the page's own animation-play-state rules for good. The
+          // style attribute is restored exactly afterwards. Scroll-driven animations are left alone.
+          try {
+            await page.evaluate(() => {
+              for (const a of document.getAnimations()) {
+                try {
+                  if (a instanceof CSSTransition) { a.finish(); continue; }
+                  if (a.playState !== "running" || !(a.timeline instanceof DocumentTimeline)) continue;
+                  const el = a.effect && a.effect.target;
+                  if (a instanceof CSSAnimation && el && el.style) {
+                    if (!("__loupeStyle" in el)) { el.__loupeStyle = el.getAttribute("style"); el.style.setProperty("animation-play-state", "paused", "important"); }
+                  } else if (!(a instanceof CSSAnimation)) { a.pause(); a.__loupePlay = true; }
+                  a.__loupeT = a.currentTime;
+                  a.currentTime = 0;
+                } catch (e) { /* an animation that cannot be held is measured where it is */ }
+              }
+            });
+            out.push({ width, colorScheme, reducedMotion, ...(await page.evaluate(`(${src})()`)) });
+          } finally {
+            await page.evaluate(() => {
+              for (const a of document.getAnimations()) {
+                try {
+                  if ("__loupeT" in a) { a.currentTime = a.__loupeT; delete a.__loupeT; }
+                  if (a.__loupePlay) { delete a.__loupePlay; a.play(); }
+                } catch (e) { /* keep restoring the rest */ }
+              }
+              for (const el of document.querySelectorAll("*")) if ("__loupeStyle" in el) {
+                const s = el.__loupeStyle;
+                delete el.__loupeStyle;
+                if (s === null) el.removeAttribute("style"); else el.setAttribute("style", s);
+              }
+            });
+          }
         }
   } finally {
     if (vp) await page.setViewportSize(vp);

@@ -1,16 +1,17 @@
 import plugin from '../../../.claude-plugin/plugin.json'
+import pkg from '../../../package.json'
 
 export const site = {
   name: 'loupe',
   url: 'https://loupe.ashwinsathian.com',
   repo: 'https://github.com/AshwinSathian/loupe',
   version: plugin.version,
-  released: '2026-10-26',
+  released: '2026-11-17',
   updated: '2026-11-17',
   author: 'Ashwin Sathian',
   authorUrl: 'https://ashwinsathian.com/',
   description:
-    'A Claude Code skill that reviews UI and UX against Apple’s Human Interface Guidelines, measures what it can, flags interfaces that look template-made, and proposes fixes and reworks with evidence. iOS, iPadOS, macOS and the web.',
+    'A Claude Code skill that reviews UI and UX against Apple’s Human Interface Guidelines, measures what it can, including keyboard use, flags template-made interfaces, and proposes fixes with evidence. Also a CLI for CI. iOS, iPadOS, macOS and the web.',
   disclaimer:
     'loupe is an independent project. It is not affiliated with, endorsed by, or sponsored by Apple Inc. Apple, Human Interface Guidelines, Liquid Glass, SF Pro, SF Symbols, iOS, iPadOS and macOS are trademarks of Apple Inc.',
 }
@@ -29,6 +30,7 @@ export const nav = [
 export const install = {
   skills: 'npx skills add AshwinSathian/loupe',
   plugin: '/plugin marketplace add AshwinSathian/loupe\n/plugin install loupe@loupe',
+  cli: `npx -y playwright@${pkg.dependencies.playwright} install chromium\nnpx -y github:AshwinSathian/loupe#v${plugin.version} http://localhost:3000/`,
   symlink:
     'git clone https://github.com/AshwinSathian/loupe.git\nmkdir -p ~/.claude/skills\nln -s "$(pwd)/loupe" ~/.claude/skills/loupe',
 }

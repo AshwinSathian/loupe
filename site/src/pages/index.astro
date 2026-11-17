@@ -14,8 +14,9 @@ import { blob, install, site } from '../lib/site'
     <MeasuredHeading>A design review that shows its measurements.</MeasuredHeading>
     <p class="lede">
       loupe is a Claude Code skill. It reviews an interface against Apple’s Human Interface Guidelines and the research
-      around them. It measures what it can in the running app, says how strongly Apple states each rule it cites, and
-      tells you when a screen looks like every other template. It works on iOS, iPadOS and macOS apps and on the web.
+      around them. It measures what it can in the running app, walks it with the keyboard, stresses it with long and
+      right-to-left text, says how strongly Apple states each rule it cites, and tells you when a screen looks like every
+      other template. It works on iOS, iPadOS and macOS apps and on the web.
     </p>
     <Command text={install.skills} label="install command" />
     <p class="muted">
@@ -114,11 +115,15 @@ import { blob, install, site } from '../lib/site'
         <h3>Clone and link, so git pull updates it</h3>
         <Command text={install.symlink} label="clone and link commands" quiet />
       </div>
+      <div class="field">
+        <h3>Measuring only, without a model, for CI</h3>
+        <Command text={install.cli} label="CLI commands" quiet />
+      </div>
     </div>
     <p class="muted">
       Then ask in plain words: “review the checkout flow at localhost:3000”, “does this screen look AI-made?”, “audit our
-      tokens”. Measuring a web app live needs the Playwright MCP server; without it loupe works from source and
-      screenshots and lists the measured checks as unverified. <a href={blob('README.md')}>README</a>.
+      tokens”. Measuring a web app live needs the Playwright MCP server, or a shell for the bundled CLI; without either,
+      loupe works from source and screenshots and lists the measured checks as unverified. <a href={blob('README.md')}>README</a>.
     </p>
   </section>
 </Base>

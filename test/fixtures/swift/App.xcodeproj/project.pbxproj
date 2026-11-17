@@ -1,0 +1,2 @@
+// !$*UTF8*$!
+{ objects = { A = { LastUpgradeCheck = 2600; }; B = { buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; }; }; C = { buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 18.0; }; }; }; }

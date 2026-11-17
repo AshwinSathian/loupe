@@ -1,0 +1,8 @@
+<!doctype html><html><body>
+<a id="first" href="#1">First</a>
+<div id="widget"><button id="t1">One</button><button id="t2">Two</button></div>
+<a id="after" href="#2">After</a>
+<script>
+document.getElementById('t2').addEventListener('keydown', (e) => { if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); document.getElementById('t1').focus(); } });
+</script>
+</body></html>

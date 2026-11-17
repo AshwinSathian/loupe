@@ -1,5 +1,9 @@
 # Report template
 
+<!-- contents -->
+Contents: 1. Summary · 2. Findings · 3. Trust · 4. Landscape · 5. Distinctiveness verdict · 6. Type · 7. Reworks · 8. Enhancements · 9. Coverage · 10. Unverified · 11. Offer
+<!-- /contents -->
+
 Sections, in this order. Nothing is edited before the Offer is accepted.
 
 ## 1. Summary
@@ -77,10 +81,34 @@ If none clears the bar: "No rework warranted:" and the reason in one line.
 
 Up to 8 improvements with no defect behind them (fewer when the evidence is thin; say so), grouped by area (experience and flows, information architecture, visual design and theming, brand and identity, motion and feedback, content and voice, platform capabilities); only areas with evidence appear. Each names something in this product (a screen, its core action, its content, a landscape gap), its HIG principle (Purpose, Agency, Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight), the mechanism, and what it unlocks. A theming or identity enhancement may carry a theming sketch. No house style; every concrete value carries its trace.
 
-## 9. Unverified
+## 9. Coverage
+
+One row per check family, so the reader sees what was checked and how. Status: **Measured** (name the script and the widths or modes), **Source** (file and line), **By eye** (screenshot), **Not checked** (and a line in Unverified), **N/A** (say why).
+
+| Check | Status | Evidence |
+|---|---|---|
+| Text contrast (1.4.3) | | |
+| Non-text contrast (1.4.11) | | |
+| Target size (2.5.8, Apple 44 pt) | | |
+| Names and roles (4.1.2) | | |
+| Keyboard reach and traps (2.1.1, 2.1.2) | | |
+| Focus visible and not obscured (2.4.7, 2.4.11) | | |
+| Reflow at 320 px (1.4.10) | | |
+| Text spacing (1.4.12) | | |
+| Text size (1.4.4, Dynamic Type) | | |
+| Dark mode and increased contrast | | |
+| Reduced motion | | |
+| Localization: long text, RTL | | |
+| Empty, loading, error, offline | | |
+| Reading order for screen readers | | |
+| Template tells | | |
+
+Under the table, one line: automated checks find only part of what an accessibility audit finds, so a Measured row with no failures says that check passed, not that the product is accessible.
+
+## 10. Unverified
 
 States and behaviors not seen: stress states not driven, platforms not run, flows not reached, items recalled rather than measured, landscape claims not confirmed. One line each, with what would verify it. For screenshot-only input, name transient feedback and timing states by kind (toasts, loading and skeleton states, hover, focus, animation, error states), never one generic line.
 
-## 10. Offer
+## 11. Offer
 
 Which findings can be fixed in code now, grouped (for example "all copy rewrites", "contrast tokens", "target sizes"), and ask before editing. Say which need design decisions first. Enhancements and reworks need the user's call: offer to build an enhancement, or a throwaway prototype of a rework's smallest experiment. Never ask for code: list, as optional, what more input (source, a running URL, a booted simulator) would let the skill verify.

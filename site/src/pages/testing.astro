@@ -5,6 +5,7 @@ import { html, section } from '../lib/md'
 import { pairs, ready, resultMd } from '../lib/round'
 import { check, results } from '../lib/results'
 import { readRepo } from '../lib/repo'
+import { act, check as checkEngine, engineSummary } from '../lib/engine'
 import { article, blob, breadcrumb, site, tree } from '../lib/site'
 
 // The commit that added keys.sha256 and the pre-registration, before any run.
@@ -12,7 +13,7 @@ const SEAL = '98a41da7deea7a01fcd89100a27b2fd26751c5c8'
 const P = 'evals/heldout/preregistration.md'
 
 const description =
-  'How loupe was tested: a pre-registered blind round on three fixtures it was never tuned against, three Claude models, three judges, sealed answer keys, and every result including the losses.'
+  'How loupe was tested: a pre-registered blind round on three fixtures it was never tuned against, three Claude models, three judges, sealed answer keys, every result including the losses, and the measuring engine scored on W3C test cases.'
 
 const fixtureName: Record<string, string> = {
   'web-sloppy': 'Lendwell (flawed web page)',
@@ -24,6 +25,9 @@ const caseSlug: Record<string, string> = { 'web-sloppy': 'lendwell', 'web-good':
 // A build without the round's files would ship an empty page; fail instead.
 if (!ready()) throw new Error('evals/heldout is missing result.md or a judge file')
 check()
+checkEngine()
+const engine = engineSummary()
+const actRules = Object.entries(act().rules)
 const rows = pairs()
 const notes = readRepo('evals/heldout/notes.md').replace(/^# .*\n/, '').replace(/^Written[^\n]*\n/m, '')
 ---
@@ -124,6 +128,42 @@ const notes = readRepo('evals/heldout/notes.md').replace(/^# .*\n/, '').replace(
         </details>
       ))
     }
+  </section>
+
+  <section class="section" aria-labelledby="engine-h">
+    <header>
+      <h2 id="engine-h">The measuring engine, scored on its own</h2>
+      <p>
+        The blind round tested whole reviews. Version 2 adds two tests of the scripts underneath them: the measurement,
+        the keyboard walk and the stress modes, with no model involved.
+      </p>
+    </header>
+    <div class="prose">
+      <p>
+        <strong>Planted defects.</strong> A clean page gets one defect at a time, set at the WCAG boundary (text at 4.48:1
+        against a 4.5 threshold, buttons 23 pixels across against 24), plus decoys that look wrong but pass (4.54:1, a lone
+        16-pixel button with space around it, a modal dialog that keeps focus). The list was committed with a checksum
+        before each run. {engine.mutation} The same author wrote the engine and the defects, so this is an upper bound;{' '}
+        <a href={blob('evals/mutation/notes.md')}>the notes</a> say why.
+      </p>
+      <p>
+        <strong>Test cases written by others.</strong> The W3C’s ACT Rules Community Group publishes test pages for its
+        accessibility rules, each marked as passing or failing. {engine.act} The misses are mostly cases the engine
+        declines to guess at (text over a gradient), browser behaviour that differs from the rule (Chromium names an
+        unlabelled image button “Submit”), and zoom, which it doesn’t emulate.{' '}
+        <a href={blob('evals/act/notes.md')}>Every miss and false alarm, with the reason</a>.
+      </p>
+    </div>
+    <div class="table-wrap" role="region" aria-label="ACT rules results" tabindex="0">
+      <table class="act">
+        <thead><tr><th scope="col">ACT rule</th><th scope="col">Failing cases caught</th><th scope="col">False alarms</th></tr></thead>
+        <tbody>
+          {actRules.map(([id, r]) => (
+            <tr><td>{r.name} <span class="muted">({id})</span></td><td>{r.caught} of {r.failed}</td><td>{r.falseAlarms} of {r.notFailed}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <section class="section" aria-labelledby="limits-h">
