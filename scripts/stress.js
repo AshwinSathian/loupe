@@ -86,7 +86,10 @@ async (mode) => {
       for (const t of nodes) {
         const s = t.nodeValue, core = s.trim();
         undo.push(() => { t.nodeValue = s; });
-        t.nodeValue = s.replace(core, `[${core.replace(/[aeiouAEIOUcny]/g, (ch) => MAP[ch])} ${"~".repeat(Math.max(1, Math.round(core.length * 0.4)))}]`);
+        // Padding in 5-character words, so it wraps as translated text would; one unbreakable run of
+        // padding would overflow narrow boxes no real translation overflows.
+        const pad = "~".repeat(Math.max(1, Math.round(core.length * 0.4))).replace(/(~{5})(?=~)/g, "$1 ");
+        t.nodeValue = s.replace(core, `[${core.replace(/[aeiouAEIOUcny]/g, (ch) => MAP[ch])} ${pad}]`);
       }
       notes.push({ kind: "text-nodes-changed", count: nodes.length });
       await frames();
@@ -102,7 +105,8 @@ async (mode) => {
     if (scrolled() && !scrolledBefore) {
       const out = all().filter((el) => !el.closest(EXEMPT) && visible(el) && getComputedStyle(el).position !== "fixed" && el.getBoundingClientRect().right > innerWidth + 1);
       const outer = out.filter((el) => !out.includes(el.parentElement));
-      problems.unshift({ kind: "page-scroll", scrollWidth: se.scrollWidth, viewport: innerWidth, examples: outer.slice(0, 5).map((el) => `${sel(el)} (right edge ${Math.round(el.getBoundingClientRect().right)}px)`) });
+      // Only exempt 2D content (a data table, code, media) sticks out: WCAG 1.4.10 allows that scroll.
+      if (outer.length) problems.unshift({ kind: "page-scroll", scrollWidth: se.scrollWidth, viewport: innerWidth, examples: outer.slice(0, 5).map((el) => `${sel(el)} (right edge ${Math.round(el.getBoundingClientRect().right)}px)`) });
     }
     return { mode, width: innerWidth, problems, notes };
   } finally {

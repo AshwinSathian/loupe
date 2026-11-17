@@ -1,5 +1,5 @@
 {
-  "note": "Committed with operators.sha256 before the first run. Each operator patches base.html; defects must produce the rule at the severity given, decoys must not produce it. Thresholds sit at the WCAG boundaries.",
+  "note": "Round 2, committed with operators.sha256 before its run. Changes from round 1 are listed in notes.md: three operators that did not encode the defect they named, and one base-page fix. Each operator patches base.html; defects must produce the rule at the severity given, decoys must not produce it.",
   "operators": [
     {
       "id": "contrast-4.48",
@@ -28,8 +28,8 @@
         "rule": "target-size",
         "severity": "fail"
       },
-      "describe": "Two 23 px buttons side by side, 2 px apart",
-      "css": "#actions button{min-width:0;min-height:0;width:23px;height:23px;padding:0}#actions{gap:2px}"
+      "describe": "Two 23 px buttons touching (centres 23 px apart, so the 24 px circles overlap)",
+      "css": "#actions button{min-width:0;min-height:0;width:23px;height:23px;padding:0}#actions{gap:0}"
     },
     {
       "id": "name-removed",
@@ -102,8 +102,8 @@
         "rule": "spacing-clipped",
         "severity": "warn"
       },
-      "describe": "About text in a fixed-height box",
-      "css": "#about-text{height:3rem;overflow:hidden}"
+      "describe": "About text in a one-line fixed-height box that fits until text spacing is applied (at 1440 px)",
+      "css": "#about-text{height:1.5rem;overflow:hidden;white-space:normal}@media (max-width:60rem){#about-text{height:auto}}"
     },
     {
       "id": "px-text",
@@ -132,8 +132,8 @@
       "id": "decoy-contrast-4.54",
       "kind": "decoy",
       "absent": "contrast",
-      "describe": "Intro text #767676 (4.54:1): looks grey, passes",
-      "css": "#intro{color:#767676}"
+      "describe": "Intro text #767676 on white in light mode (4.54:1): looks grey, passes",
+      "css": "@media (prefers-color-scheme: light){#intro{color:#767676}}"
     },
     {
       "id": "decoy-target-24",
