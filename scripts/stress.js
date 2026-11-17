@@ -21,14 +21,17 @@ async (mode) => {
   const roots = [document];
   for (let i = 0; i < roots.length; i++) for (const el of roots[i].querySelectorAll("*")) if (el.shadowRoot) roots.push(el.shadowRoot);
   const all = () => roots.flatMap((r) => [...r.querySelectorAll("*")]);
+  // Selector within the element's own root; ">>>" separates a shadow host from the part inside it.
   const sel = (e) => {
-    const parts = [];
+    const parts = [], root = e.getRootNode();
     for (let n = e; n && n.nodeType === 1 && n !== document.documentElement; n = n.parentElement) {
       if (n.id) { parts.unshift(`#${CSS.escape(n.id)}`); break; }
-      const sib = n.parentElement ? [...n.parentElement.children].filter((c) => c.tagName === n.tagName) : [];
+      const par = n.parentElement || (n.parentNode instanceof ShadowRoot ? n.parentNode : null);
+      const sib = par ? [...par.children].filter((c) => c.tagName === n.tagName) : [];
       parts.unshift(sib.length > 1 ? `${n.tagName.toLowerCase()}:nth-of-type(${sib.indexOf(n) + 1})` : n.tagName.toLowerCase());
     }
-    return parts.join(" > ");
+    const own = parts.join(" > ");
+    return root instanceof ShadowRoot ? `${sel(root.host)} >>> ${own}` : own;
   };
   const EXEMPT = "table,pre,code,kbd,samp,canvas,video,iframe,svg,img,picture,map,[role=grid],[role=toolbar],[role=img],[role=application],script,style,noscript,template";
   const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && s.display !== "none"; };

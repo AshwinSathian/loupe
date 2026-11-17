@@ -73,3 +73,10 @@ test("stress: rtl restores dir; a fluid page reports nothing in any mode", async
   assert.equal(await page.evaluate(() => document.documentElement.getAttribute("dir")), null);
   assert.deepEqual(page.viewportSize(), { width: 1024, height: 700 });
 });
+
+test("stress: selectors inside a shadow root name the host and tell siblings apart", async () => {
+  await page.setContent(`<x-tabs id="t"></x-tabs><script>customElements.define("x-tabs", class extends HTMLElement { constructor() { super(); this.attachShadow({ mode: "open" }).innerHTML = "<style>span{display:inline-block;width:40px;white-space:nowrap;overflow:hidden}</style><span>Alpha tab</span><span>Beta tab</span>"; } });</script>`);
+  const out = await page.evaluate(`(${read("../scripts/stress.js")})("reflow")`);
+  const sels = out.problems.map((p) => p.selector).sort();
+  assert.deepEqual(sels, ["#t >>> span:nth-of-type(1)", "#t >>> span:nth-of-type(2)"]);
+});
