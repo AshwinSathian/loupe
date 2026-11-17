@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 (17 November 2026)
+
+- `loupe-review` now treats a page that answers HTTP 400 or higher as a load error (exit code 2). Before, it measured the error page, which has few problems of its own, so a mistyped URL or a broken deploy passed. `--allow-error-status` measures such pages anyway. Found by the post-build review of the GitHub Action.
+
 ## 2.1.0 (17 November 2026)
 
 - **Gemini CLI extension.** `gemini extensions install https://github.com/AshwinSathian/loupe` installs the skill, from an archive that CI builds and attaches to each GitHub release (`tools/build_extension.py`, `.github/workflows/release-assets.yml`). Two earlier layouts failed in testing and were dropped: symlinks (Gemini rewrites them to absolute paths into a temporary clone), and a committed copy under `skills/loupe/` (`npx skills add` installs it inside the skill, so Codex listed loupe twice; found by the pre-release review). Loaded on Gemini CLI 0.68.0.

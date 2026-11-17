@@ -163,6 +163,7 @@ It is published from GitHub Actions with npm trusted publishing: each release si
 | `--update-baseline` | Write the current findings to the baseline file |
 | `--fail-on new\|any\|none` | What fails the run (default `new` with a baseline, else `any`) |
 | `--allow-file` | Allow `file:` URLs |
+| `--allow-error-status` | Measure pages that answer HTTP 400 or higher. By default such a page is a load error (exit code 2), because an error page has few problems of its own and would pass |
 
 Exit codes: `0` pass, `1` findings at the `--fail-on` level, `2` usage, page-load or browser error.
 

@@ -57,6 +57,14 @@ test("cli: baseline then --fail-on new passes; a new problem fails", async () =>
   assert.match(worse.stdout, /\| new \| fail \| 1\.4\.3 \|/);
 });
 
+test("cli: an error page is a load error, not a pass; --allow-error-status measures it", async () => {
+  const r = await cli(`${base}/missing.html`, "--only", "measure");
+  assert.equal(r.code, 2, r.stdout);
+  assert.match(r.stderr + r.stdout, /answered HTTP 404/);
+  const ok = await cli(`${base}/missing.html`, "--only", "measure", "--allow-error-status");
+  assert.equal(ok.code, 0, ok.stderr);
+});
+
 test("cli: a clean page exits 0; usage errors exit 2", async () => {
   assert.equal((await cli(`${base}/focus-clean.html`, "--only", "measure,interact", "--widths", "1440")).code, 0);
   const file = await cli("file:///etc/hosts");
