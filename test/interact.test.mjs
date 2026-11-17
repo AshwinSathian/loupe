@@ -30,11 +30,13 @@ test("interact: no ring, positive tabindex, unnamed icon button, focus under a f
   assert.equal(await page.evaluate(() => document.activeElement === document.body), true);
 });
 
-test("interact: a widget that swallows Tab is a trap", async () => {
+test("interact: a widget that swallows Tab is a trap, and the walk continues past it", async () => {
   const r = await walk("trap");
   assert.equal(r.trap.kind, "cycle");
   assert.equal(r.trap.inDialog, false);
-  assert.equal(r.complete, false);
+  assert.equal(r.trap.walkContinued, true);
+  assert.ok(r.order.some((o) => o.endsWith("#after")), r.order.join("\n"));
+  assert.equal(r.traps.length, 1);
 });
 
 test("interact: a blur handler that pulls focus back on a timer is a trap; unreached unnamed fields are counted", async () => {

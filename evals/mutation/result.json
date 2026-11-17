@@ -1,25 +1,22 @@
 {
   "date": "2026-11-17",
-  "commit": "6ffe983",
+  "commit": "5c7e8e1",
   "engine": "chromium 156.0.8078.4",
-  "base_clean": false,
+  "base_clean": true,
   "defects": {
     "total": 12,
-    "detected": 10
+    "detected": 12
   },
   "decoys": {
     "total": 8,
-    "clean": 7
+    "clean": 8
   },
   "rows": [
     {
       "id": "base",
       "kind": "base",
-      "pass": false,
-      "found": [
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "pass": true,
+      "found": []
     },
     {
       "id": "contrast-4.48",
@@ -27,9 +24,7 @@
       "rule": "contrast",
       "pass": true,
       "found": [
-        "contrast:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "contrast:fail"
       ]
     },
     {
@@ -38,20 +33,17 @@
       "rule": "contrast",
       "pass": true,
       "found": [
-        "contrast:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "contrast:fail"
       ]
     },
     {
       "id": "target-23",
       "kind": "defect",
       "rule": "target-size",
-      "pass": false,
+      "pass": true,
       "found": [
-        "pseudo-overflows:warn",
-        "reflow-overflows:warn",
-        "target-goal:warn"
+        "target-size:fail",
+        "reflow-overflows:warn"
       ]
     },
     {
@@ -60,9 +52,7 @@
       "rule": "name",
       "pass": true,
       "found": [
-        "name:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "name:fail"
       ]
     },
     {
@@ -71,9 +61,7 @@
       "rule": "focus-visible",
       "pass": true,
       "found": [
-        "focus-visible:warn",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "focus-visible:warn"
       ]
     },
     {
@@ -82,9 +70,7 @@
       "rule": "focus-obscured",
       "pass": true,
       "found": [
-        "focus-obscured:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "focus-obscured:fail"
       ]
     },
     {
@@ -93,9 +79,7 @@
       "rule": "keyboard-trap",
       "pass": true,
       "found": [
-        "keyboard-trap:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "keyboard-trap:fail"
       ]
     },
     {
@@ -104,9 +88,7 @@
       "rule": "reflow-page-scroll",
       "pass": true,
       "found": [
-        "pseudo-overflows:warn",
-        "reflow-page-scroll:warn",
-        "target-goal:warn"
+        "reflow-page-scroll:warn"
       ]
     },
     {
@@ -116,19 +98,17 @@
       "pass": true,
       "found": [
         "pseudo-clipped:warn",
-        "pseudo-overflows:warn",
-        "reflow-clipped:warn",
-        "target-goal:warn"
+        "reflow-clipped:warn"
       ]
     },
     {
       "id": "fixed-height",
       "kind": "defect",
       "rule": "spacing-clipped",
-      "pass": false,
+      "pass": true,
       "found": [
-        "reflow-clipped:warn",
-        "target-goal:warn"
+        "pseudo-clipped:warn",
+        "spacing-clipped:warn"
       ]
     },
     {
@@ -137,7 +117,6 @@
       "rule": "text-fixed-px",
       "pass": true,
       "found": [
-        "target-goal:warn",
         "text-fixed-px:warn"
       ]
     },
@@ -147,21 +126,15 @@
       "rule": "positive-tabindex",
       "pass": true,
       "found": [
-        "positive-tabindex:warn",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "positive-tabindex:warn"
       ]
     },
     {
       "id": "decoy-contrast-4.54",
       "kind": "decoy",
       "rule": "contrast",
-      "pass": false,
-      "found": [
-        "contrast:fail",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "pass": true,
+      "found": []
     },
     {
       "id": "decoy-target-24",
@@ -169,7 +142,6 @@
       "rule": "target-size",
       "pass": true,
       "found": [
-        "pseudo-overflows:warn",
         "reflow-overflows:warn",
         "target-goal:warn"
       ]
@@ -180,7 +152,6 @@
       "rule": "target-size",
       "pass": true,
       "found": [
-        "pseudo-overflows:warn",
         "target-goal:warn"
       ]
     },
@@ -189,40 +160,28 @@
       "kind": "decoy",
       "rule": "name",
       "pass": true,
-      "found": [
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "found": []
     },
     {
       "id": "decoy-focus-within",
       "kind": "decoy",
       "rule": "focus-visible",
       "pass": true,
-      "found": [
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "found": []
     },
     {
       "id": "decoy-modal",
       "kind": "decoy",
       "rule": "keyboard-trap",
       "pass": true,
-      "found": [
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "found": []
     },
     {
       "id": "decoy-wide-table",
       "kind": "decoy",
       "rule": "reflow-page-scroll",
       "pass": true,
-      "found": [
-        "pseudo-overflows:warn",
-        "target-goal:warn"
-      ]
+      "found": []
     },
     {
       "id": "decoy-partly-covered",
@@ -230,9 +189,7 @@
       "rule": "focus-obscured",
       "pass": true,
       "found": [
-        "focus-partly-obscured:warn",
-        "pseudo-overflows:warn",
-        "target-goal:warn"
+        "focus-partly-obscured:warn"
       ]
     }
   ]

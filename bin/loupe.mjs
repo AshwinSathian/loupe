@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { platform, arch } from "node:os";
 import vm from "node:vm";
+import { createRequire } from "node:module";
 import { toFindings, diff, mdEscape, mdCode } from "../lib/findings.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -67,11 +68,14 @@ if (failOn === "new" && !o.baseline) die("--fail-on new needs --baseline <file>"
 const widths = o.widths ? o.widths.split(",").map(Number) : null;
 if (widths && widths.some((w) => !(w >= 200 && w <= 4000))) die(`--widths must be numbers from 200 to 4000: ${o.widths}`);
 
-let pw;
-try { pw = await import("playwright"); } catch { die("Playwright is not installed. Run: npm install playwright"); }
+let pw, pwVersion = "unknown";
+try {
+  pw = await import("playwright");
+  pwVersion = JSON.parse(readFileSync(createRequire(import.meta.url).resolve("playwright/package.json"), "utf8")).version;
+} catch { die("Playwright is not installed. Run: npm install playwright"); }
 let browser;
 try { browser = await pw[o.browser].launch(); }
-catch (e) { die(`could not start ${o.browser}. Install it with: npx playwright install ${o.browser}\n${e.message.split("\n")[0]}`); }
+catch (e) { die(`could not start ${o.browser}. Install the build this Playwright (${pwVersion}) expects: npx -y playwright@${pwVersion} install ${o.browser}\n${e.message.split("\n")[0]}`); }
 
 // Runners are read and run the way the skill runs them through Playwright MCP: a vm context holding
 // only `page`, the runner text unchanged.
@@ -80,7 +84,7 @@ const runner = (name, page, opts) => {
   return vm.runInContext(`(${code})`, vm.createContext({ page }))(page).then((r) => JSON.parse(JSON.stringify(r)));
 };
 
-const env = { tool: `loupe ${VERSION}`, browser: `${o.browser} ${browser.version()}`, playwright: (() => { try { return JSON.parse(readFileSync(`${ROOT}node_modules/playwright/package.json`, "utf8")).version; } catch { return "unknown"; } })(), platform: `${platform()}-${arch()}` };
+const env = { tool: `loupe ${VERSION}`, browser: `${o.browser} ${browser.version()}`, playwright: pwVersion, platform: `${platform()}-${arch()}` };
 const pages = {};
 let loadError = false;
 try {

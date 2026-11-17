@@ -8,8 +8,10 @@ async (page, opts = {}) => {
   //   text decoration or transform on the element or either of its two nearest ancestors, which covers
   //   :focus-within rings; a style diff, so a heuristic: warn only); and whether fixed or sticky author
   //   content covers it (WCAG 2.4.11: "entirely" fails, "partly" passes the AA criterion).
-  // Also: a keyboard trap (WCAG 2.1.2: focus stays put for 3 presses, or wraps back to a stop other than
-  //   the first; a cycle inside an open modal dialog is expected and reported with inDialog: true),
+  // Also: keyboard traps (WCAG 2.1.2: focus stays put for 3 presses, or wraps back to a stop other than
+  //   the first; a cycle inside an open modal dialog is expected and reported with inDialog: true). After
+  //   a trap the walk focuses the next element after it and continues (walkContinued), up to 3 traps;
+  //   `trap` is the first, `traps` all of them.
   //   positive tabindex values, and unnamed controls and images anywhere in the page (counted per role
   //   from the page's aria snapshot, which carries no selectors; focusable ones are named per stop).
   // Options: maxStops (default 80), timeMs (default 15000), settleMs (wait after each key, default 60), width (viewport width for the walk), key
@@ -70,10 +72,31 @@ async (page, opts = {}) => {
   };
 
   const stops = [], seen = new Map();
-  let trap = null, stuck = 0, last = null;
+  const traps = [];
+  let trap = null, stuck = 0, last = null, skipPress = preFocused;
+  // After a trap, focus the first tabbable element after the trapped ones (in DOM order) and keep
+  // walking, so one trap does not hide the rest of the page. At most 3 traps.
+  const stepPast = (sels) => page.evaluate((sels) => {
+    const els = sels.map((s) => { try { return document.querySelector(s); } catch { return null; } }).filter(Boolean);
+    if (!els.length) return false;
+    const lastEl = els.reduce((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? b : a));
+    const next = [...document.querySelectorAll('a[href],button,input,select,textarea,summary,iframe,[tabindex],[contenteditable="true"]')]
+      .find((e) => e.tabIndex >= 0 && !e.disabled && e.getClientRects().length && !e.closest("[inert]") && !els.includes(e) && (lastEl.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING) && !lastEl.contains(e));
+    if (!next) return false;
+    next.focus();
+    return true;
+  }, sels);
+  const onTrap = async (t, sels) => {
+    traps.push(t);
+    if (!trap) trap = t;
+    if (t.inDialog || traps.length >= 3) return false;
+    t.walkContinued = await stepPast(sels);
+    return t.walkContinued;
+  };
   try {
     for (let i = 0; i < maxStops && Date.now() - started < timeMs; i++) {
-      if (i > 0 || !preFocused) {
+      if (skipPress) skipPress = false;
+      else {
         await page.keyboard.press(key);
         // Let focus handlers that move focus on a timer (blur -> setTimeout -> focus) run first.
         await page.waitForTimeout(opts.settleMs ?? 60);
@@ -89,18 +112,20 @@ async (page, opts = {}) => {
             .filter((e) => e.tabIndex >= 0 && !e.disabled && e.getClientRects().length && !e.closest("[inert]"));
           return f[f.length - 1] === document.activeElement;
         });
-        if (!isLast) trap = { selector: p.selector, kind: "focus does not move", inDialog: false };
-        break;
+        if (isLast || !(await onTrap({ selector: p.selector, kind: "focus does not move", inDialog: false }, [p.selector]))) break;
+        stuck = 0; last = null; skipPress = true;
+        continue;
       }
       stuck = 0;
       if (seen.has(p.selector)) {
         // Wrapped. Back to the first stop is a normal cycle; back to a later one is a trap.
         const at = seen.get(p.selector);
-        if (at > 0) {
-          const inDialog = await page.evaluate((sels) => sels.every((s) => { const e = document.querySelector(s); return !!(e && e.closest('dialog[open],[aria-modal="true"]')); }), stops.slice(at).map((c) => c.selector));
-          trap = { selector: p.selector, kind: "cycle", cycleLength: stops.length - at, inDialog };
-        }
-        break;
+        if (at === 0) break;
+        const cyc = stops.slice(at).map((c) => c.selector);
+        const inDialog = await page.evaluate((sels) => sels.every((s) => { const e = document.querySelector(s); return !!(e && e.closest('dialog[open],[aria-modal="true"]')); }), cyc);
+        if (!(await onTrap({ selector: p.selector, kind: "cycle", cycleLength: cyc.length, inDialog }, cyc))) break;
+        last = null; skipPress = true;
+        continue;
       }
       let aria = "";
       try { aria = (await page.locator(":focus").ariaSnapshot({ timeout: 1000 })).split("\n")[0]; } catch { /* focus moved or element detached */ }
@@ -125,8 +150,9 @@ async (page, opts = {}) => {
     const pick = (s) => ({ selector: s.selector, role: s.role, name: s.name });
     return {
       stops: stops.length,
-      complete: (!trap || trap.inDialog) && stops.length < maxStops && Date.now() - started < timeMs,
+      complete: traps.every((t) => t.inDialog || t.walkContinued) && stops.length < maxStops && Date.now() - started < timeMs,
       trap,
+      traps,
       noVisibleFocus: stops.filter((s) => !s.visibleChange).map(pick),
       obscured: stops.filter((s) => s.obscured === "entirely" || s.obscured === "partly").map((s) => ({ ...pick(s), obscured: s.obscured })),
       positiveTabindex: stops.filter((s) => Number(s.tabindex) > 0).map((s) => ({ ...pick(s), tabindex: Number(s.tabindex) })),

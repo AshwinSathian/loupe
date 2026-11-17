@@ -10,7 +10,7 @@
     {
       "name": "loupe",
       "source": ".",
-      "description": "Design review for Claude Code: checks UI and UX against Apple's Human Interface Guidelines and the research around them, measures contrast, targets, type and motion in the running app, and flags template-made interfaces. iOS, iPadOS, macOS and the web. Independent; not affiliated with Apple.",
+      "description": "Design review for Claude Code: checks UI and UX against Apple's Human Interface Guidelines and the research around them, measures contrast, targets, keyboard focus, names, reflow, text spacing and localization in the running app, scans native source, and flags template-made interfaces. Includes a CLI for CI. iOS, iPadOS, macOS and the web. Independent; not affiliated with Apple.",
       "author": {
         "name": "Ashwin Sathian",
         "url": "https://ashwinsathian.com/"
@@ -26,9 +26,12 @@
         "human-interface-guidelines",
         "swiftui",
         "design-systems",
-        "ai-slop"
+        "ai-slop",
+        "keyboard-accessibility",
+        "ci"
       ],
-      "homepage": "https://loupe.ashwinsathian.com"
+      "homepage": "https://loupe.ashwinsathian.com",
+      "version": "2.0.0"
     }
   ]
 }

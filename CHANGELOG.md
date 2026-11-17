@@ -1,10 +1,46 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 (17 November 2026)
 
-The website was rebuilt from Next.js to Astro, served from Cloudflare's edge as static files. loupe reviewed the rebuild: 26 findings (no Blocker, 7 Major), all addressed. The report and the fixes are on the [specimen page](https://loupe.ashwinsathian.com/specimen#third-h) and in `site/review/third-review.md`. The skill is unchanged.
+loupe 1.x measured the web page as it looked after load, and nothing else: keyboard use, stress states, native apps and tokens were judged by eye, and its own eval could not fail on recall. 2.0 measures those too, runs without a model in CI, says in every report what it checked, and is scored against test cases written by other people.
+
+**Measuring**
+
+- `scripts/interact-runner.js` walks the page with real Tab presses (Option-Tab in WebKit, as Safari skips links on Tab): the accessible name at each stop, whether focus changes anything visible on the element or its two ancestors, focus entirely hidden under fixed or sticky content (WCAG 2.4.11), keyboard traps outside modal dialogs (2.1.2), positive tabindex, and unnamed controls anywhere in the page.
+- `scripts/stress-runner.js` applies reflow at 320 px (1.4.10), text spacing (1.4.12), 200% root text, pseudo-localization (+40%) and right-to-left, and reports only the clipping, overflow and sideways scroll each one introduced. Each mode reverts itself in the same call, so no reload loses the app's state.
+- `scripts/swift_scan.py` reads SwiftUI, UIKit and React Native source without building: fixed font sizes, Dynamic Type caps, asset images read aloud as button names, tap gestures with no button trait, React Native text that ignores the system size. It also decides the `(26+)` gate, from the built app's SDK when given `--app`.
+- `scripts/tokens.py` checks declared colour-token pairs in Design Tokens (DTCG 2025.10) files, one file set per mode, converting the Color module's colour spaces (oklch, display-p3, lab and others) and flagging colours clamped to sRGB.
+- `measure.js` reports two more template tells, gradient text and glow shadows on a dark page, and the runner holds animations still while measuring, so a spinning element no longer changes the result between runs.
+- Native stress uses Xcode's own launch arguments (double-length strings, right-to-left, AX5) through `simctl launch`, so the project is not edited.
+
+**CLI**
+
+- `bin/loupe.mjs` runs the three runners on one or more URLs in Chromium, WebKit or Firefox and prints a markdown summary or JSON. `--baseline` and `--fail-on new` make it a CI gate that reports new, fixed and still-present findings. Only measured problems that no WCAG exception covers fail a run; heuristics are warnings.
+- Finding ids come from the rule, role, text and colours, not from the element's position, so adding a list item does not turn one finding into a new one and a fixed one.
+- Page text and selectors are escaped in the markdown, so a page cannot write headings, links or images into a CI summary.
+- `file:` URLs need `--allow-file`. Pages behind a sign-in take `--storage-state`.
+
+**Reviews**
+
+- Every report has a Coverage table: each check family marked Measured, Source, By eye, Not checked or N/A, with the evidence.
+- The red team walks the core task once per constraint (keyboard only, largest text, one hand, translated) from the measured output, never from imagination.
+- An unnamed focusable control, a trap outside a dialog and focus entirely hidden are measured Blockers; a missing focus indicator needs a screenshot first; stress rows are leads until a screenshot confirms them.
+- New profile key `baseline`: the review passes it to the CLI and never writes it.
+
+**Rules corrected**
+
+- Apps linked against the iOS 27 SDK ignore `UIDesignRequiresCompatibility` (Apple engineer, Developer Forums thread 832543). The `(26+)` gate used to skip Liquid Glass checks for those apps whenever the key was present; they now run, and a leftover key is a Minor finding.
+- APCA is advisory. It is not normative in the 3 March 2026 WCAG 3 draft, so an APCA shortfall on text that passes WCAG 2 is Research, Minor at most, and needs a computed Lc.
+
+**Evals**
+
+- `evals/mutation/`: 12 defects planted at WCAG boundaries (4.48 against 4.54:1, 23 against 24 px) and 8 decoys, committed with a sha256 before each run. Round 1 found two operators that did not encode the defect they named and one engine false positive (pseudo-localization padding that could not wrap); round 2 detected 12 of 12 and stayed quiet on 8 of 8. `notes.md` explains why that is an upper bound.
+- `evals/act/`: the W3C ACT Rules test cases for the 11 rules the engine covers, fetched from w3.org at run time. First run: 30 of 58 failing cases caught, 9 of 125 false alarms. It exposed two gaps (a trap that pulls focus back on a timer; unnamed controls outside the Tab order), fixed; second run: 39 of 58, 9 of 125. `notes.md` lists every remaining miss and why.
+- Cases F (prompt injection aimed at loupe's own levers: a hidden note, a waiver file request, a request to create a file) and G (seven defects only the new runners measure), each run with and without the skill. Results in `evals/results/2026-11-17.md`.
 
 **Site**
+
+The website was rebuilt from Next.js to Astro, served from Cloudflare's edge as static files. loupe reviewed the rebuild: 26 findings (no Blocker, 7 Major), all addressed. The report and the fixes are on the [specimen page](https://loupe.ashwinsathian.com/specimen#third-h) and in `site/review/third-review.md`.
 
 - Bricolage Grotesque for all text, JetBrains Mono for code only, both cut to Latin. About 26 KB and 8 KB; the mono file loads only on a page with code.
 - Inline CSS, the font sent as an HTTP `Link` early hint, prefetch and prerender on hover, CSS page transitions, a strict CSP with no inline script.
