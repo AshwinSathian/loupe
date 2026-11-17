@@ -22,7 +22,9 @@
     "NOTICE"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs && for t in test/test_*.py tools/test_tools.py; do python3 -I \"$t\" || exit 1; done"
+    "test": "node --test test/*.test.mjs && for t in test/test_*.py tools/test_tools.py; do python3 -I \"$t\" || exit 1; done",
+    "eval:mutation": "node evals/mutation/run.mjs",
+    "eval:act": "node evals/act/run.mjs"
   },
   "engines": {
     "node": ">=20"

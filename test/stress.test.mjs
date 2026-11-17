@@ -26,6 +26,15 @@ test("stress: reflow at 320 finds the fixed-width panel, not the data table", as
   assert.doesNotMatch(scroll.examples.join(), /table/);
 });
 
+test("stress: only a wide data table sticking out at 320 is not a reflow failure", async () => {
+  await page.setContent('<style>body{margin:0}table{width:900px}</style><p>Fluid text</p><table><tr><td>Wide data</td></tr></table>');
+  const src = read("../scripts/stress.js");
+  await page.setViewportSize({ width: 320, height: 700 });
+  const out = await page.evaluate(`(${src})("reflow")`);
+  await page.setViewportSize({ width: 1024, height: 700 });
+  assert.deepEqual(out.problems, []);
+});
+
 test("stress: pseudo-localization clips the ellipsis tab; text is restored", async () => {
   const html = await page.setContent(read("./fixtures/stress.html")).then(() => page.content());
   const out = await stress("stress", { modes: ["pseudo"], widths: [1024] });

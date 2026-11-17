@@ -37,6 +37,12 @@ test("interact: a widget that swallows Tab is a trap", async () => {
   assert.equal(r.complete, false);
 });
 
+test("interact: a blur handler that pulls focus back on a timer is a trap; unreached unnamed fields are counted", async () => {
+  const r = await walk("trap-timer");
+  assert.equal(r.trap?.selector, "#b", JSON.stringify(r.trap));
+  assert.deepEqual(r.unnamed, [{ role: "textbox", count: 1 }]);
+});
+
 test("interact: focus cycling inside an open modal dialog is not a trap", async () => {
   const r = await walk("dialog");
   assert.equal(r.trap?.inDialog ?? true, true, JSON.stringify(r.trap));

@@ -12,7 +12,7 @@ async (page, opts = {}) => {
   //   the first; a cycle inside an open modal dialog is expected and reported with inDialog: true),
   //   positive tabindex values, and unnamed controls and images anywhere in the page (counted per role
   //   from the page's aria snapshot, which carries no selectors; focusable ones are named per stop).
-  // Options: maxStops (default 80), timeMs (default 15000), width (viewport width for the walk), key
+  // Options: maxStops (default 80), timeMs (default 15000), settleMs (wait after each key, default 60), width (viewport width for the walk), key
   //   (default Tab; Alt+Tab in WebKit, which otherwise skips links and buttons as Safari does).
   // Side effects: focus moves (the page's focus and blur handlers run, as for a keyboard user) and the
   //   page scrolls. Nothing is clicked or typed. Focus is released and the scroll position and viewport
@@ -73,7 +73,11 @@ async (page, opts = {}) => {
   let trap = null, stuck = 0, last = null;
   try {
     for (let i = 0; i < maxStops && Date.now() - started < timeMs; i++) {
-      if (i > 0 || !preFocused) await page.keyboard.press(key);
+      if (i > 0 || !preFocused) {
+        await page.keyboard.press(key);
+        // Let focus handlers that move focus on a timer (blur -> setTimeout -> focus) run first.
+        await page.waitForTimeout(opts.settleMs ?? 60);
+      }
       const p = await page.evaluate(probe);
       if (!p) { if (stops.length) break; continue; } // focus left the document: the cycle is done
       if (last && p.selector === last.selector) {
