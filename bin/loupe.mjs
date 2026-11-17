@@ -25,6 +25,7 @@ Usage: loupe [measure] <url>... [options]
   --update-baseline      write the current findings to --baseline and exit 0
   --fail-on <level>      new (default with --baseline), any (default without), none
   --allow-file           allow file: URLs (off by default)
+  --allow-error-status   measure pages that answer HTTP 400 or higher (default: such a page is a load error)
   -h, --help, -v, --version
 
 Exit codes: 0 pass, 1 findings at the --fail-on level, 2 usage, load or browser error.
@@ -40,7 +41,7 @@ try {
       only: { type: "string" }, widths: { type: "string" }, browser: { type: "string", default: "chromium" },
       "storage-state": { type: "string" }, "wait-for": { type: "string" }, timeout: { type: "string", default: "30000" },
       json: { type: "string" }, md: { type: "string" }, baseline: { type: "string" }, "update-baseline": { type: "boolean" },
-      "fail-on": { type: "string" }, "allow-file": { type: "boolean" },
+      "fail-on": { type: "string" }, "allow-file": { type: "boolean" }, "allow-error-status": { type: "boolean" },
       help: { type: "boolean", short: "h" }, version: { type: "boolean", short: "v" },
     },
   });
@@ -86,7 +87,9 @@ try {
   for (const url of urls) {
     const page = await context.newPage();
     try {
-      await page.goto(url, { waitUntil: "load", timeout: Number(o.timeout) });
+      const response = await page.goto(url, { waitUntil: "load", timeout: Number(o.timeout) });
+      // A 404 or 500 page has few problems of its own and would pass: treat it as a load error instead.
+      if (response && response.status() >= 400 && !o["allow-error-status"]) throw new Error(`the page answered HTTP ${response.status()} (use --allow-error-status to measure it anyway)`);
       if (o["wait-for"]) await page.waitForSelector(o["wait-for"], { timeout: Number(o.timeout) });
       await page.evaluate(() => document.fonts && document.fonts.ready);
       const raw = {};

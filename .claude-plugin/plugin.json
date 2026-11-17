@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "loupe",
   "displayName": "loupe",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Design review for Claude Code: checks UI and UX against Apple's Human Interface Guidelines and the research around them, measures contrast, targets, keyboard focus, names, reflow, text spacing and localization in the running app, scans native source, and flags template-made interfaces. Includes a CLI for CI. iOS, iPadOS, macOS and the web. Independent; not affiliated with Apple.",
   "author": {
     "name": "Ashwin Sathian",
