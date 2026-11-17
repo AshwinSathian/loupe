@@ -77,6 +77,16 @@ test("findings: ids survive a renumbered selector; diff sorts new, fixed, still"
   assert.equal(diff([], { findings: a }).fixed.length, 1);
 });
 
+test("findings: two unnamed buttons are two findings; inserting an element before them keeps both ids", () => {
+  const walk = (sels) => ({ unnamedFocusable: sels.map((selector) => ({ selector, anchor: "toolbar", role: "button", name: "" })) });
+  const a = toFindings({ interact: walk(["div > button:nth-of-type(1)", "div > button:nth-of-type(2)"]) });
+  assert.equal(a.length, 2);
+  const b = toFindings({ interact: walk(["div > button:nth-of-type(2)", "div > button:nth-of-type(3)"]) });
+  assert.deepEqual(b.map((f) => f.id), a.map((f) => f.id));
+  const c = toFindings({ interact: walk(["div > button:nth-of-type(1)", "div > button:nth-of-type(2)", "div > button:nth-of-type(3)"]) });
+  assert.equal(diff(c, { findings: a }).new.length, 1);
+});
+
 test("findings: disabled, unmeasurable and spacing-exempt rows are not failures", () => {
   const f = toFindings({ measure: [{ width: 390, colorScheme: "light", reducedMotion: "reduce",
     contrast: [{ selector: "a", text: "x", status: "fail", disabled: true }, { selector: "b", text: "y", status: "unmeasurable" }],

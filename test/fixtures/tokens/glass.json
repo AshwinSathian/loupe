@@ -1,0 +1,1 @@
+{ "color": { "$type": "color", "surface": { "$value": "#121212" }, "glass": { "$value": "#ffffff0f" }, "text": { "$value": "#e8e8e8" } } }

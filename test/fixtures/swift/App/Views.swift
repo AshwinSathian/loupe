@@ -22,3 +22,8 @@ struct Views: View {
         // Text("x").font(.system(size: 9)) commented out: ignored
     }
 }
+
+struct Scaled: View {
+    @ScaledMetric(relativeTo: .body) var badge: CGFloat = 17
+    var body: some View { Text("Badge").font(.system(size: badge)) }
+}

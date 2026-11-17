@@ -35,6 +35,18 @@ test("stress: only a wide data table sticking out at 320 is not a reflow failure
   assert.deepEqual(out.problems, []);
 });
 
+test("stress: right-to-left overflow to the left is reported; $& in text survives pseudo", async () => {
+  await page.setContent('<style>body{margin:0}#w{margin-left:-300px}</style><p id="w">Wide in RTL</p><p id="d">Costs $& and $1</p>');
+  const src = read("../scripts/stress.js");
+  await page.setViewportSize({ width: 390, height: 700 });
+  const rtl = await page.evaluate(`(${src})("rtl")`);
+  const pseudo = await page.evaluate(`(${src})("pseudo")`);
+  await page.setViewportSize({ width: 1024, height: 700 });
+  assert.deepEqual(rtl.problems.find((p) => p.kind === "page-scroll")?.examples, ["#w (left edge -300px)"]);
+  assert.equal(await page.evaluate(() => document.getElementById("d").textContent), "Costs $& and $1");
+  assert.ok(pseudo.notes[0].count >= 2);
+});
+
 test("stress: pseudo-localization clips the ellipsis tab; text is restored", async () => {
   const html = await page.setContent(read("./fixtures/stress.html")).then(() => page.content());
   const out = await stress("stress", { modes: ["pseudo"], widths: [1024] });

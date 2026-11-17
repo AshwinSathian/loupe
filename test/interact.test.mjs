@@ -23,8 +23,8 @@ test("interact: no ring, positive tabindex, unnamed icon button, focus under a f
   assert.deepEqual(sels(r.noVisibleFocus), ["#none"]);
   assert.deepEqual(r.positiveTabindex.map((x) => [x.selector, x.tabindex]), [["#jump", 3]]);
   assert.deepEqual(r.unnamed, [{ role: "button", count: 1 }]);
-  assert.deepEqual(r.unnamedFocusable, [{ selector: "#icon", role: "button", name: "" }]);
-  assert.deepEqual(r.obscured, [{ selector: "#under", role: "link", name: "Under footer", obscured: "entirely" }]);
+  assert.deepEqual(r.unnamedFocusable, [{ selector: "#icon", anchor: "body", role: "button", name: "" }]);
+  assert.deepEqual(r.obscured, [{ selector: "#under", anchor: "body", role: "link", name: "Under footer", obscured: "entirely" }]);
   assert.equal(r.trap, null);
   assert.equal(r.complete, true);
   assert.equal(await page.evaluate(() => document.activeElement === document.body), true);
@@ -60,6 +60,26 @@ test("interact: a ring drawn by :focus-within on the parent counts as visible", 
 test("interact: width option is applied for the walk and the viewport restored", async () => {
   await walk("focus-clean", { width: 400 });
   assert.equal(page.viewportSize().width, 1024);
+});
+
+test("interact: controls inside a shadow root are separate stops, not a trap", async () => {
+  const r = await walk("shadow-focus");
+  assert.equal(r.trap, null, JSON.stringify(r.trap));
+  assert.equal(r.stops, 6);
+  assert.ok(r.order.some((o) => o.includes("#x >>> button:nth-of-type(5)")), r.order.join("\n"));
+  assert.equal(r.complete, true);
+});
+
+test("interact: an autofocused field does not hide the controls before it", async () => {
+  const r = await walk("autofocus");
+  assert.deepEqual(r.unnamedFocusable.map((s) => [s.role, s.anchor]), [["button", "nav"]]);
+  assert.equal(r.stops, 3);
+});
+
+test("interact: two buttons passing focus back and forth trap it, even from the first stop", async () => {
+  const r = await walk("pingpong");
+  assert.equal(r.trap?.kind, "cycle", JSON.stringify(r));
+  assert.equal(r.trap.inDialog, false);
 });
 
 test("interact: a clean page reports nothing", async () => {

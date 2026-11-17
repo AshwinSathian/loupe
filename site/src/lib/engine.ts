@@ -14,7 +14,7 @@ export const engineSummary = () => {
   const m = mutation(), a = act(), a1 = actFirst(), m1 = mutationRound1()
   return {
     mutation: `Round 2 detected ${m.defects.detected} of ${m.defects.total} planted defects and stayed quiet on ${m.decoys.clean} of ${m.decoys.total} decoys. Round 1 had found ${m1.defects.detected} of ${m1.defects.total} and ${m1.decoys.clean} of ${m1.decoys.total}: two operators did not encode the defect they named, and one engine false positive was fixed.`,
-    act: `On the ${Object.keys(a.rules).length} rules the engine covers, it caught ${a.totals.caught} of ${a.totals.failed} failing cases and raised ${a.totals.falseAlarms} false alarms in ${a.totals.notFailed} passing or inapplicable ones. The first run caught ${a1.totals.caught}; two gaps it exposed were fixed.`,
+    act: `On the ${Object.keys(a.rules).length} rules the engine covers, it caught ${a.totals.caught} of ${a.totals.failed} failing cases and raised ${a.totals.falseAlarms} false alarms in ${a.totals.notFailed} passing or inapplicable ones. The first run caught ${a1.totals.caught}; the gaps it and a later code review exposed were fixed.`,
   }
 }
 

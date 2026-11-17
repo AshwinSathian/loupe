@@ -1,0 +1,8 @@
+<!doctype html><html><head><style>
+@keyframes spin{to{transform:rotate(1turn)}}
+#a{animation:spin 2s infinite}
+#a.held{animation-play-state:paused}
+@keyframes grow{to{transform:scaleX(1)}}
+#bar{height:4px;background:#333;transform-origin:0 50%;animation:grow linear both;animation-timeline:scroll()}
+body{height:2000px}
+</style></head><body><div id="bar"></div><p id="a" style="color:#222">spin</p></body></html>

@@ -41,7 +41,7 @@ The measuring scripts run without a model, in Chromium, WebKit or Firefox:
 npx -y github:AshwinSathian/loupe#v2.0.0 http://localhost:3000/settings
 ```
 
-The first run needs a browser: `npx playwright install chromium`. It prints a markdown summary; `--json out.json` writes every finding. Only measured problems that no WCAG exception covers fail the run (contrast, 24 px targets, unnamed focusable controls, keyboard traps outside dialogs, focus entirely hidden); heuristics such as a missing focus style or text that clips under stress are warnings. `loupe --help` lists every option.
+The first run needs the browser build its Playwright expects: `npx -y playwright@1.64.1 install chromium` (the CLI prints this command if the browser is missing). It prints a markdown summary; `--json out.json` writes every finding. Only measured problems that no WCAG exception covers fail the run (contrast, 24 px targets, unnamed focusable controls, keyboard traps outside dialogs, focus entirely hidden); heuristics such as a missing focus style or text that clips under stress are warnings. `loupe --help` lists every option.
 
 In CI, commit a baseline once, then fail only on new findings:
 
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: 22 }
       - run: npm ci && npm run build && (npm run start &) && npx wait-on http://localhost:3000
-      - run: npx playwright install --with-deps chromium
+      - run: npx -y playwright@1.64.1 install --with-deps chromium
       - run: npx -y github:AshwinSathian/loupe#v2.0.0 http://localhost:3000/ http://localhost:3000/settings --baseline loupe-baseline.json --md "$GITHUB_STEP_SUMMARY"
 ```
 
@@ -95,7 +95,7 @@ Text that loupe reads from your pages and from the web reaches the model as evid
 Two evals score the measuring engine on its own:
 
 - `npm run eval:mutation` plants 12 defects at WCAG boundaries (4.48 against 4.54:1, 23 against 24 px) in a clean page, and 8 decoys that look wrong but pass. The operators are committed with a sha256 before each run. Round 2 detected 12 of 12 and stayed quiet on all 8 decoys, after round 1 found two operators that didn't encode their defect and one engine false positive ([notes](evals/mutation/notes.md)).
-- `npm run eval:act` runs the W3C ACT Rules test cases, written by others, for the 11 rules the engine covers. It caught 39 of 58 failing cases with 9 false alarms in 125 passing ones; [the notes](evals/act/notes.md) list every miss.
+- `npm run eval:act` runs the W3C ACT Rules test cases, written by others, for the 11 rules the engine covers. It caught 40 of 58 failing cases with 10 false alarms in 125 passing ones; [the notes](evals/act/notes.md) list every miss.
 
 The review itself was tested in a pre-registered blind round on three fixtures written by model instances that never saw loupe's rules: a flawed web page, a well-built web app, and a SwiftUI app. Claude Haiku, Sonnet and Opus each reviewed every fixture with and without loupe, and three Claude judges compared the pairs without being told which was which.
 

@@ -12,8 +12,9 @@ and Info.plist files. It never builds, runs or edits anything. Prints one JSON o
            the deployment target and says so.
   findings: [{rule, file, line, hint, detail}]. Each is evidence from source, read with SKILL.md's Impact
            rules; `hint` is the usual Impact, not a verdict. Rules:
-    fixed-font          .system(size:), .custom(_, fixedSize:), UIFont.systemFont(ofSize:) or UIFont(name:size:)
-                        in a file with no UIFontMetrics: text that ignores Dynamic Type.
+    fixed-font          .system(size:) (unless the size is an @ScaledMetric property), .custom(_, fixedSize:), and
+                        UIFont.systemFont(ofSize:) or UIFont(name:size:) in a file with no UIFontMetrics or
+                        adjustsFontForContentSizeCategory: text that ignores Dynamic Type.
     dynamic-type-cap    .dynamicTypeSize(...) whose upper bound is below .accessibility1.
     asset-image-button  Image("name") within 3 lines after a Button, with no accessibilityLabel in its modifier
                         chain: VoiceOver reads the asset name (a poor name, Major; not a missing one).
@@ -69,7 +70,9 @@ def scan_swift(path, rel, text, out):
     for i, l in enumerate(lines):
         code = l.split("//", 1)[0]
         n = i + 1
-        if re.search(r"\.system\(\s*size\s*:", code) or re.search(r"\.custom\([^)]*fixedSize\s*:", code):
+        m_size = re.search(r"\.system\(\s*size\s*:\s*([A-Za-z_]\w*)?", code)
+        scaled = m_size and m_size.group(1) and re.search(r"@ScaledMetric[^\n]*\bvar\s+" + re.escape(m_size.group(1)) + r"\b", text)
+        if (m_size and not scaled) or re.search(r"\.custom\([^)]*fixedSize\s*:", code):
             out.append({"rule": "fixed-font", "file": rel, "line": n, "hint": "Major",
                         "detail": "SwiftUI font with a fixed size: does not scale with Dynamic Type (use a text style, or .custom(_:size:relativeTo:))"})
         if not has_metrics and re.search(r"UIFont\.systemFont\(\s*ofSize\s*:|UIFont\(\s*name\s*:[^)]*size\s*:", code):

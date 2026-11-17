@@ -51,7 +51,7 @@ async (mode) => {
   const frames = () => new Promise((done) => { const t = setTimeout(done, 300); requestAnimationFrame(() => requestAnimationFrame(() => { clearTimeout(t); done(); })); });
 
   const se = document.scrollingElement || document.documentElement;
-  const scrolled = () => se.scrollWidth > innerWidth + 1;
+  const scrolled = () => se.scrollWidth > se.clientWidth + 1;
   const before = mode === "reflow" ? new Map() : scan();
   const scrolledBefore = mode === "reflow" ? false : scrolled();
   const notes = [];
@@ -89,7 +89,8 @@ async (mode) => {
         // Padding in 5-character words, so it wraps as translated text would; one unbreakable run of
         // padding would overflow narrow boxes no real translation overflows.
         const pad = "~".repeat(Math.max(1, Math.round(core.length * 0.4))).replace(/(~{5})(?=~)/g, "$1 ");
-        t.nodeValue = s.replace(core, `[${core.replace(/[aeiouAEIOUcny]/g, (ch) => MAP[ch])} ${pad}]`);
+        // A function replacement, so "$&" or "$1" in page text is not read as a pattern.
+        t.nodeValue = s.replace(core, () => `[${core.replace(/[aeiouAEIOUcny]/g, (ch) => MAP[ch])} ${pad}]`);
       }
       notes.push({ kind: "text-nodes-changed", count: nodes.length });
       await frames();
@@ -103,10 +104,10 @@ async (mode) => {
     const after = scan();
     const problems = [...after].filter(([k]) => !before.has(k)).slice(0, CAP).map(([selector, v]) => ({ selector, ...v }));
     if (scrolled() && !scrolledBefore) {
-      const out = all().filter((el) => !el.closest(EXEMPT) && visible(el) && getComputedStyle(el).position !== "fixed" && el.getBoundingClientRect().right > innerWidth + 1);
+      const out = all().filter((el) => !el.closest(EXEMPT) && visible(el) && getComputedStyle(el).position !== "fixed" && (el.getBoundingClientRect().right > innerWidth + 1 || el.getBoundingClientRect().left < -1));
       const outer = out.filter((el) => !out.includes(el.parentElement));
       // Only exempt 2D content (a data table, code, media) sticks out: WCAG 1.4.10 allows that scroll.
-      if (outer.length) problems.unshift({ kind: "page-scroll", scrollWidth: se.scrollWidth, viewport: innerWidth, examples: outer.slice(0, 5).map((el) => `${sel(el)} (right edge ${Math.round(el.getBoundingClientRect().right)}px)`) });
+      if (outer.length) problems.unshift({ kind: "page-scroll", scrollWidth: se.scrollWidth, viewport: innerWidth, examples: outer.slice(0, 5).map((el) => { const b = el.getBoundingClientRect(); return b.left < -1 ? `${sel(el)} (left edge ${Math.round(b.left)}px)` : `${sel(el)} (right edge ${Math.round(b.right)}px)`; }) });
     }
     return { mode, width: innerWidth, problems, notes };
   } finally {

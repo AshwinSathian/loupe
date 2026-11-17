@@ -3,6 +3,8 @@
 Usage:
   python3 -I scripts/tokens.py <tokens.json>... --pair <fg>:<bg> [--pair ...]
   python3 -I scripts/tokens.py --mode light=<file>[,<file>] --mode dark=<file>[,<file>] --pair <fg>:<bg> ...
+  python3 -I scripts/tokens.py ... --base <surface token>  (the opaque surface translucent backgrounds sit
+                                                            on, resolved in each mode; required for them)
   python3 -I scripts/tokens.py ... --pairs <pairs.json>    (a JSON list of ["fg.token", "bg.token"] or
                                                             {"fg": ..., "bg": ..., "large": true})
 Token paths are dot-separated (color.text.primary). Files in one mode merge in order, later files winning,
@@ -184,15 +186,17 @@ def main(argv):
     if not argv or argv[0] in ("-h", "--help"):
         print(__doc__)
         sys.exit(0 if argv else 2)
-    modes, plain, pairs = {}, [], []
+    modes, plain, pairs, base = {}, [], [], None
     i = 0
     while i < len(argv):
         a = argv[i]
-        if a in ("--mode", "--pair", "--pairs"):
+        if a in ("--mode", "--pair", "--pairs", "--base"):
             if i + 1 >= len(argv):
                 fail(f"{a} needs a value")
             v = argv[i + 1]
-            if a == "--mode":
+            if a == "--base":
+                base = v
+            elif a == "--mode":
                 name, _, files = v.partition("=")
                 if not files:
                     fail("--mode needs name=file[,file]")
@@ -226,7 +230,14 @@ def main(argv):
         tokens = load(files)
         for p in pairs:
             (fg, fc), (bg, bc) = (color(resolve(tokens, p[k]), p[k]) for k in ("fg", "bg"))
-            bgc = contrast.over(bg, [255, 255, 255, 1.0])
+            if bg[3] < 1 and not base:
+                fail(f"{p['bg']} is translucent in mode {mode}: pass --base <surface token> so it is composited over the surface it sits on, not over white")
+            under = [255, 255, 255, 1.0]
+            if base:
+                bc0, bcl = color(resolve(tokens, base), base)
+                under = contrast.over(bc0, [255, 255, 255, 1.0])
+                bc = bc or bcl
+            bgc = contrast.over(bg, under)
             fgc = contrast.over(fg, bgc)
             hi, lo = sorted((contrast.lum(fgc), contrast.lum(bgc)), reverse=True)
             ratio = (hi + 0.05) / (lo + 0.05)

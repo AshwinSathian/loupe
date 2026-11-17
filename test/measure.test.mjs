@@ -227,6 +227,15 @@ test("runner: { full: true } covers 3 widths x 2 schemes x 2 motion prefs", asyn
   assert.equal(pick("light", "reduce").motion.animatedOnLoad.length, 0);
 });
 
+test("runner: scroll-driven animations do not break it; the page's own play-state rules still work afterwards", async () => {
+  await page.setContent(read("./fixtures/anim-state.html"));
+  const out = await runRunner({ full: true, widths: [390] });
+  assert.equal(out.length, 4);
+  assert.equal(await page.evaluate(() => document.getElementById("a").getAttribute("style")), "color:#222");
+  const state = await page.evaluate(() => { const a = document.getElementById("a"); a.classList.add("held"); return a.getAnimations()[0].playState; });
+  assert.equal(state, "paused");
+});
+
 test("runner: compact default keeps only failing rows, deduped, under 20 KB", async () => {
   const media = await runner("media");
   assert.equal(media.combinations.length, 12);

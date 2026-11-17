@@ -13,7 +13,11 @@ Two engine gaps, fixed before the second run:
 
 ## Second run
 
-`result.json`: caught 39 of 58; false alarms 9 of 125.
+Caught 39 of 58; false alarms 9 of 125 (not kept as a file; the third run replaced `result.json`).
+
+## Third run, after an independent code review
+
+`result.json`: caught 40 of 58; false alarms 10 of 125. The review found that a return to the first stop was always read as the end of the page, so two buttons passing focus back and forth from the first stop escaped; that is now a trap when tabbable elements remain unreached. The same test page appears twice in ACT: as a failure of a1b64e (traps under standard navigation, now caught) and as a pass of 80af7b (the composite rule, which also accepts escape by other means), so the fix adds one catch and one false alarm. The review's other fixes (focus inside shadow roots, autofocused fields, animation state) did not change any ACT result.
 
 What it still misses, and why (not fixed, by choice):
 
@@ -22,4 +26,4 @@ What it still misses, and why (not fixed, by choice):
 - **Zoomed text clipped by overflow (5).** The `text200` mode scales the root font size, which px-set text ignores; ACT's cases need browser zoom. Not emulated.
 - **One form field and one link** whose names come from sources the snapshot resolves differently from ACT's expectation.
 
-False alarms: 3 keyboard traps that ACT passes because the page tells the user how to leave (the engine cannot read instructions); 4 contrast rows on text ACT does not test: 2 labels of disabled controls (the engine exempts only text inside the disabled element, not its label) and 2 runs of glyphs ACT treats as non-language (a string of symbols, an "X" on a button named "Close"); and 2 focus-visible rows where focus is shown by a separate indicator element elsewhere on the page, which a style diff of the element and its two ancestors cannot see. These are why the CLI marks trap and contrast as fail but a review confirms them first, and why focus-visible is only a warning.
+False alarms: 4 keyboard traps that ACT's composite rule passes (3 where the page tells the user how to leave, which the engine cannot read, and the back-and-forth page above); 4 contrast rows on text ACT does not test: 2 labels of disabled controls (the engine exempts only text inside the disabled element, not its label) and 2 runs of glyphs ACT treats as non-language (a string of symbols, an "X" on a button named "Close"); and 2 focus-visible rows where focus is shown by a separate indicator element elsewhere on the page, which a style diff of the element and its two ancestors cannot see. These are why the CLI marks trap and contrast as fail but a review confirms them first, and why focus-visible is only a warning.

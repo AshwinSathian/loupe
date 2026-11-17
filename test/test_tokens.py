@@ -51,3 +51,10 @@ assert code == 2 and "all-pairs" in err, err
 code, _, err = run(T("base.json"), "--pair", "color.nope:color.bg.surface")
 assert code == 2 and "unknown token color.nope" in err, err
 print("tokens: ok")
+
+# A translucent surface needs --base; over a dark base, light text passes.
+code, _, err = run(T("glass.json"), "--pair", "color.text:color.glass")
+assert code == 2 and "--base" in err, err
+code, rows, err = run(T("glass.json"), "--base", "color.surface", "--pair", "color.text:color.glass")
+assert code == 0 and rows[0]["pass"] and rows[0]["bg_hex"] == "#202020", rows
+print("tokens base: ok")

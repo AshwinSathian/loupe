@@ -28,22 +28,47 @@ async (page, opts = {}) => {
   const vp = page.viewportSize();
   if (opts.width) await page.setViewportSize({ width: opts.width, height: vp ? vp.height : 900 });
   const scroll = await page.evaluate(() => [scrollX, scrollY]);
-  const preFocused = await page.evaluate(() => { scrollTo(0, 0); const a = document.activeElement; return !!a && a !== document.body && a !== document.documentElement; });
+  // Start from the top. An element that already has focus is the first stop only inside an open modal
+  // dialog (its focus is the page's starting point); otherwise, such as an autofocused field, it is
+  // blurred so the walk does not skip everything before it.
+  const preFocused = await page.evaluate(() => {
+    scrollTo(0, 0);
+    const a = document.activeElement;
+    if (!a || a === document.body || a === document.documentElement) return false;
+    if (a.closest('dialog[open],[aria-modal="true"]')) return true;
+    a.blur();
+    return false;
+  });
 
   // In-page probe for the focused element. Defines no globals; page-controlled strings are clipped.
   const probe = () => {
-    const el = document.activeElement;
+    // Follow focus into open shadow roots; a focused iframe is reported as the iframe.
+    let el = document.activeElement;
     if (!el || el === document.body || el === document.documentElement) return null;
+    while (el.shadowRoot && el.shadowRoot.activeElement) el = el.shadowRoot.activeElement;
     const clip = (s, n = 60) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
+    // Selector within the element's own root; ">>>" separates a shadow host from the part inside it.
     const sel = (e) => {
-      const parts = [];
+      const parts = [], root = e.getRootNode();
       for (let n = e; n && n.nodeType === 1 && n !== document.documentElement; n = n.parentElement) {
-        if (n.id && document.querySelectorAll(`#${CSS.escape(n.id)}`).length === 1) { parts.unshift(`#${CSS.escape(n.id)}`); break; }
-        const sib = n.parentElement ? [...n.parentElement.children].filter((c) => c.tagName === n.tagName) : [];
+        if (n.id && root.querySelectorAll(`#${CSS.escape(n.id)}`).length === 1) { parts.unshift(`#${CSS.escape(n.id)}`); break; }
+        const par = n.parentElement || (n.parentNode instanceof ShadowRoot ? n.parentNode : null);
+        const sib = par ? [...par.children].filter((c) => c.tagName === n.tagName) : [];
         parts.unshift(sib.length > 1 ? `${n.tagName.toLowerCase()}:nth-of-type(${sib.indexOf(n) + 1})` : n.tagName.toLowerCase());
       }
-      return parts.join(" > ");
+      const own = parts.join(" > ");
+      return root instanceof ShadowRoot ? `${sel(root.host)} >>> ${own}` : own;
     };
+    // Where the element sits, for finding ids that survive a renumbered selector: the nearest ancestor
+    // (or host) with an id, else the nearest landmark, else "body".
+    const anchor = (() => {
+      for (let n = el.parentElement || (el.getRootNode().host ?? null); n; n = n.parentElement || (n.getRootNode().host ?? null)) {
+        if (n.id) return `#${n.id}`;
+        const role = n.getAttribute("role");
+        if (/^(NAV|MAIN|HEADER|FOOTER|ASIDE|FORM|DIALOG)$/.test(n.tagName) || /^(navigation|main|banner|contentinfo|complementary|form|dialog|region|toolbar|menu|menubar|tablist|grid)$/.test(role || "")) return role || n.tagName.toLowerCase();
+      }
+      return "body";
+    })();
     const KEYS = ["outlineStyle", "outlineWidth", "outlineColor", "boxShadow", "borderTopColor", "borderBottomColor", "borderTopWidth", "borderBottomWidth", "backgroundColor", "color", "textDecorationLine", "transform"];
     const chain = [el, el.parentElement, el.parentElement && el.parentElement.parentElement].filter((n) => n && n !== document.body && n !== document.documentElement);
     const snap = () => chain.map((n) => { const s = getComputedStyle(n); return KEYS.map((k) => s[k]).join("|"); });
@@ -65,7 +90,7 @@ async (page, opts = {}) => {
       if (top && top !== el && !el.contains(top) && !top.contains(el) && pinned(top) && !pinned(el)) covered++;
     }
     return {
-      selector: sel(el), tag: el.tagName.toLowerCase(), text: clip((el.innerText || el.value || "").trim()),
+      selector: sel(el), anchor, tag: el.tagName.toLowerCase(), text: clip((el.innerText || el.value || "").trim()),
       visibleChange, tabindex: el.getAttribute("tabindex"),
       obscured: inView === 0 ? "offscreen" : covered === inView ? "entirely" : covered > 0 ? "partly" : "no",
     };
@@ -104,6 +129,8 @@ async (page, opts = {}) => {
       const p = await page.evaluate(probe);
       if (!p) { if (stops.length) break; continue; } // focus left the document: the cycle is done
       if (last && p.selector === last.selector) {
+        // Tab moves through an iframe's own controls while the outer page sees the iframe focused.
+        if (p.tag === "iframe") continue;
         if (++stuck < 3) continue;
         // Firefox keeps focus on the last tabbable element at the end of the page: that is the end of
         // the cycle, not a trap.
@@ -112,7 +139,7 @@ async (page, opts = {}) => {
             .filter((e) => e.tabIndex >= 0 && !e.disabled && e.getClientRects().length && !e.closest("[inert]"));
           return f[f.length - 1] === document.activeElement;
         });
-        if (isLast || !(await onTrap({ selector: p.selector, kind: "focus does not move", inDialog: false }, [p.selector]))) break;
+        if (isLast || !(await onTrap({ selector: p.selector, anchor: p.anchor, kind: "focus does not move", inDialog: false }, [p.selector]))) break;
         stuck = 0; last = null; skipPress = true;
         continue;
       }
@@ -120,15 +147,23 @@ async (page, opts = {}) => {
       if (seen.has(p.selector)) {
         // Wrapped. Back to the first stop is a normal cycle; back to a later one is a trap.
         const at = seen.get(p.selector);
-        if (at === 0) break;
+        // Back to the first stop is the end of a normal cycle, unless tabbable elements the walk never
+        // reached remain: then the cycle itself is the trap (two elements passing focus back and forth).
+        if (at === 0) {
+          const total = await page.evaluate(() => [...document.querySelectorAll('a[href],button,input,select,textarea,summary,iframe,[tabindex],[contenteditable="true"]')]
+            .filter((e) => e.tabIndex >= 0 && !e.disabled && e.getClientRects().length && getComputedStyle(e).visibility !== "hidden" && !e.closest("[inert],[hidden]")).length);
+          if (total <= stops.length) break;
+        }
         const cyc = stops.slice(at).map((c) => c.selector);
         const inDialog = await page.evaluate((sels) => sels.every((s) => { const e = document.querySelector(s); return !!(e && e.closest('dialog[open],[aria-modal="true"]')); }), cyc);
-        if (!(await onTrap({ selector: p.selector, kind: "cycle", cycleLength: cyc.length, inDialog }, cyc))) break;
+        if (!(await onTrap({ selector: p.selector, anchor: p.anchor, kind: "cycle", cycleLength: cyc.length, inDialog }, cyc))) break;
         last = null; skipPress = true;
         continue;
       }
       let aria = "";
-      try { aria = (await page.locator(":focus").ariaSnapshot({ timeout: 1000 })).split("\n")[0]; } catch { /* focus moved or element detached */ }
+      // Playwright locators pierce open shadow roots, so a host and the element inside both match
+      // :focus; the innermost comes last in document order.
+      try { aria = (await page.locator("*:focus").last().ariaSnapshot({ timeout: 1000 })).split("\n")[0]; } catch { /* focus moved or element detached */ }
       const m = /^- ([\w-]+)(?: "((?:[^"\\]|\\.)*)")?/.exec(aria);
       p.role = m ? m[1] : null;
       p.name = m && m[2] !== undefined ? m[2].slice(0, 60) : "";
@@ -147,7 +182,7 @@ async (page, opts = {}) => {
       }
       unnamed = Object.entries(counts).map(([role, count]) => ({ role, count }));
     } catch { unnamed = null; }
-    const pick = (s) => ({ selector: s.selector, role: s.role, name: s.name });
+    const pick = (s) => ({ selector: s.selector, anchor: s.anchor, role: s.role, name: s.name });
     return {
       stops: stops.length,
       complete: traps.every((t) => t.inDialog || t.walkContinued) && stops.length < maxStops && Date.now() - started < timeMs,

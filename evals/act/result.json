@@ -1,13 +1,13 @@
 {
   "date": "2026-11-17",
-  "commit": "2acfc67",
+  "commit": "493b92c",
   "source": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases.json",
   "cases": 183,
   "totals": {
     "failed": 58,
-    "caught": 39,
+    "caught": 40,
     "notFailed": 125,
-    "falseAlarms": 9,
+    "falseAlarms": 10,
     "errors": 0
   },
   "rules": {
@@ -89,14 +89,14 @@
       "failed": 5,
       "caught": 5,
       "notFailed": 11,
-      "falseAlarms": 3,
+      "falseAlarms": 4,
       "errors": 0
     },
     "a1b64e": {
       "name": "Focusable element has no keyboard trap via standard navigation",
       "engine": "keyboard-trap",
       "failed": 3,
-      "caught": 2,
+      "caught": 3,
       "notFailed": 8,
       "falseAlarms": 0,
       "errors": 0
@@ -173,11 +173,6 @@
       "url": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases/2t702h/f76f484c92eec764dbd1ee3e5ee3421f230a56d7.html"
     },
     {
-      "rule": "a1b64e",
-      "title": "Failed Example 2",
-      "url": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases/a1b64e/d2f5325f3fd5ddde38cd677a5ca36ba0d762fb84.html"
-    },
-    {
       "rule": "afw4f7",
       "title": "Failed Example 11",
       "url": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases/afw4f7/8c33a0af471cc3c1abbb9f709afa6629b13daf3a.html"
@@ -250,6 +245,12 @@
       "title": "Passed Example 6",
       "expected": "passed",
       "url": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases/80af7b/b92b5214d2b2214b89fb9812b389536759701790.html"
+    },
+    {
+      "rule": "80af7b",
+      "title": "Passed Example 7",
+      "expected": "passed",
+      "url": "https://www.w3.org/WAI/content-assets/wcag-act-rules/testcases/80af7b/d2f5325f3fd5ddde38cd677a5ca36ba0d762fb84.html"
     },
     {
       "rule": "oj04fd",
