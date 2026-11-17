@@ -1,0 +1,17 @@
+---
+interface Props {
+  commit: string
+}
+const { commit } = Astro.props
+---
+
+<div class="seal" data-seal data-commit={commit}>
+  <button type="button" class="button" data-run hidden>Check the seal</button>
+  <noscript><p class="hint">Checking the seal needs JavaScript. The hashes and keys are in evals/heldout/ in the repository.</p></noscript>
+  <p class="visually-hidden" role="status" data-status></p>
+  <div data-out></div>
+</div>
+
+<script>
+  import '../scripts/seal'
+</script>

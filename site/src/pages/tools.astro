@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro'
+import Bookmarklet from '../components/Bookmarklet.astro'
+import ContrastChecker from '../components/ContrastChecker.astro'
+import { blob, breadcrumb } from '../lib/site'
+
+const description =
+  'A WCAG contrast checker that composites translucent colours the way a browser does, and a bookmarklet that runs loupe’s measurement script on any page.'
+---
+
+<Base title="Tools" description={description} path="/tools" card="tools" schema={[breadcrumb(['Tools', '/tools'])]}>
+  <header class="page-head">
+    <h1>Measure it yourself</h1>
+    <p class="lede">Two pieces of loupe that work without Claude. Both run in your browser and send nothing anywhere.</p>
+  </header>
+
+  <section class="section" aria-labelledby="contrast-h">
+    <header>
+      <h2 id="contrast-h">Contrast checker</h2>
+      <p>
+        Type any colour your browser understands, including <code>oklch()</code> and colours with transparency. The
+        foreground is drawn over the background before measuring, as on a page. The ratio is cut, not rounded, to two
+        places, so 4.499 shows as 4.49 and fails.
+      </p>
+    </header>
+    <ContrastChecker />
+  </section>
+
+  <section class="section" aria-labelledby="bm-h">
+    <header>
+      <h2 id="bm-h">Measure any page</h2>
+      <p>
+        Add it as a bookmark, open any page, and click the bookmark. It runs
+        {' '}<a href={blob('scripts/measure.js')}>scripts/measure.js</a>, the script loupe runs during a review, on the page
+        as you see it now, and opens a panel with the results: text that fails contrast, targets under 24 pixels, type
+        sizes, motion that ignores reduced motion, and template defaults. Press Escape to close it.
+      </p>
+    </header>
+    <Bookmarklet />
+    <p class="hint">
+      It measures one width, one colour scheme and one motion setting: whatever your browser has now. A review measures
+      twelve combinations. Some sites block bookmarklets with a Content Security Policy. If nothing happens when you
+      click it, that is the likely reason; the browser console shows the block.
+    </p>
+  </section>
+</Base>

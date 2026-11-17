@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+The website was rebuilt from Next.js to Astro, served from Cloudflare's edge as static files. loupe reviewed the rebuild: 26 findings (no Blocker, 7 Major), all addressed. The report and the fixes are on the [specimen page](https://loupe.ashwinsathian.com/specimen#third-h) and in `site/review/third-review.md`. The skill is unchanged.
+
+**Site**
+
+- Bricolage Grotesque for all text, JetBrains Mono for code only, both cut to Latin. About 26 KB and 8 KB; the mono file loads only on a page with code.
+- Inline CSS, the font sent as an HTTP `Link` early hint, prefetch and prerender on hover, CSS page transitions, a strict CSP with no inline script.
+- Shimmering skeletons while something is still arriving: the next page after a slow click, images, the hero's measurements, the seal check.
+- Social cards generated at build time in the site's own typeface. Build tests for fonts, glyph coverage, headers, sitemap, links and JSON-LD.
+- Found and fixed by the review: the finding specimen on the home page collapsing to a dot, silent copy buttons, a seal check that dropped focus, and a page skeleton that covered the masthead.
+
 ## 1.1.0 (26 October 2026)
 
 loupe's own site, reviewed after launch with one question: does it look AI-made? It did. It met the slop catalogue's cluster threshold with 6 tells across 5 channels; the pre-launch review had counted 5 across 4 and stopped one short. The report and the fixes are on the site's [specimen page](https://loupe.ashwinsathian.com/specimen#second-h) and in `site/review/second-review.md`.

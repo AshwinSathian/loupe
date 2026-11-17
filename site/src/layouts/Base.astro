@@ -1,0 +1,112 @@
+---
+import '../styles/global.css'
+import NavSkeleton from '../components/NavSkeleton.astro'
+import RingMark from '../components/RingMark.astro'
+import { baseGraph, blob, nav, ogAlt, site } from '../lib/site'
+import { ld } from '../lib/ld'
+
+interface Props {
+  /** Page title without the brand. Omit on the home page. */
+  title?: string
+  description: string
+  /** Path on this site, no trailing slash ("" for home). */
+  path?: string
+  /** Name of the social card in /og/, without ".png". */
+  card?: string
+  schema?: object[]
+  noindex?: boolean
+}
+
+const { title, description, path = '', card = 'site', schema = [], noindex = false } = Astro.props
+const full = title
+  ? `${title} | ${site.name}`
+  : 'loupe: design review for Claude Code, grounded in Apple’s Human Interface Guidelines'
+const url = site.url + (path || '/')
+const image = `${site.url}/og/${card}.png`
+const here = path === '' ? '/' : path
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#eae9e6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#120d0c" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="author" content={site.author} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'}
+    />
+    {!noindex && <link rel="canonical" href={url} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={full} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title ? `Social card for “${title}” on loupe` : ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={full} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    {!noindex && [baseGraph, ...schema].map((s) => <script type="application/ld+json" set:html={ld(s)} />)}
+    <noscript>
+      <style>
+        .measured .spec, .measured .vdim { display: none !important; }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="wrap">
+      <header class="masthead">
+        <a class="wordmark" href="/"><RingMark />{site.name}</a>
+        <nav aria-label="Main">
+          <ul>
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={here.startsWith(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </header>
+      <main id="main"><slot /></main>
+      <footer class="colophon">
+        <ul>
+          <li><a href={site.repo}>Source on GitHub</a></li>
+          <li><a href={blob('SKILL.md')}>SKILL.md</a></li>
+          <li><a href={blob('CHANGELOG.md')}>Changelog</a></li>
+          <li><a href={`${site.repo}/issues/new/choose`}>Report a wrong finding</a></li>
+          <li><a href="/llms.txt">llms.txt</a></li>
+        </ul>
+        <p>
+          Version {site.version}, MIT licence. Built by <a href={site.authorUrl}>{site.author}</a>. This site has been
+          reviewed with loupe three times; <a href="/specimen">the reviews and their fixes</a> are public.
+        </p>
+        <p class="disclaimer">{site.disclaimer}</p>
+      </footer>
+    </div>
+    <NavSkeleton />
+    <script>
+      // One file for every page: navigation feedback, link prefetching and image placeholders.
+      import '../scripts/site'
+    </script>
+  </body>
+</html>

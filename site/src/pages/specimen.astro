@@ -1,0 +1,299 @@
+---
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import Base from '../layouts/Base.astro'
+import { html } from '../lib/md'
+import { colorRoles, contrastTable, themes } from '../lib/tokens'
+import { breadcrumb, tree } from '../lib/site'
+
+const description =
+  'The design system of this site, traced to its subject the way loupe asks: colour roles with measured contrast, type, spacing, motion, user journeys, and loupe’s own reviews of the site with what was fixed.'
+
+const space = [
+  ['s1', 4],
+  ['s2', 8],
+  ['s3', 12],
+  ['s4', 16],
+  ['s6', 24],
+  ['s8', 32],
+  ['s12', 48],
+  ['s16', 64],
+  ['s24', 96],
+] as const
+
+const principles = [
+  ['Purpose', 'Every page answers one question a visitor brings: what it is, how it works, whether it works, how to try it.'],
+  ['Agency', 'Nothing moves on its own. The loupe moves when you pick a finding; the tools run only when you type or click.'],
+  ['Responsibility', 'The tools send nothing anywhere. The testing page shows losses next to wins, and every claim links to the file behind it.'],
+  ['Familiarity', 'A plain top navigation, underlined links, native form controls, a plain 2-pixel focus outline in the text colour, the browser’s own scrolling.'],
+  ['Flexibility', 'Light and dark from the system setting, an increased-contrast variant, text in rem so it scales, layouts that reflow from 320 pixels and at 200% text, reduced motion honoured.'],
+  ['Simplicity', 'One accent, used for one thing. One typeface for text, one for code. No cards inside cards.'],
+  ['Craft', 'Contrast on this page is computed from the stylesheet at build time, so the numbers below are the ones that ship.'],
+  ['Delight', 'One moment, on the core idea: the ring gliding to a finding and magnifying it.'],
+]
+
+const journeys = [
+  {
+    who: 'A developer deciding whether to install it',
+    steps: ['Home: what it does, one specimen, the install command', 'Cases: a full report on something like their app', 'Install from the home page or README'],
+  },
+  {
+    who: 'A designer or accessibility lead who doubts AI reviews',
+    steps: ['Testing: the pre-registered rules, every pair, the losses', 'Cases: the control fixture, where loupe should find little', 'Method: the Blocker rule and the rework bar, quoted from the skill'],
+  },
+  {
+    who: 'Someone who wants a number now',
+    steps: ['Tools: the contrast checker', 'Tools: the bookmarklet on their own page', 'Method, if the numbers raise questions'],
+  },
+]
+
+const t = themes()
+const rows = contrastTable()
+const read = (f: string) => {
+  const p = join(process.cwd(), 'review', f)
+  return existsSync(p) ? readFileSync(p, 'utf8') : null
+}
+const reviewMd = read('report.md')!
+const review = html(reviewMd, 1)
+const fixes = html(read('fixes.md')!)
+// The heading line is dropped; the page gives the section its own h2.
+const second = html(read('second-review.md')!.replace(/^## .*\n/, ''))
+const third = read('third-review.md')
+const thirdFixes = read('third-fixes.md')
+// Counted from the report's own findings table, so the numbers match it.
+const impacts = [...reviewMd.matchAll(/^\| \d+ \|.*?\| (Blocker|Major|Minor|Polish) \|/gm)].map((m) => m[1])
+const counts = {
+  blocker: impacts.filter((x) => x === 'Blocker').length,
+  major: impacts.filter((x) => x === 'Major').length,
+  minor: impacts.filter((x) => x === 'Minor').length,
+}
+---
+
+<Base title="Specimen" description={description} path="/specimen" card="specimen" schema={[breadcrumb(['Specimen', '/specimen'])]}>
+  <header class="page-head">
+    <h1>How this site is designed</h1>
+    <p class="lede">
+      loupe tells products to trace every design value to their subject, their audience or a gap among their peers, and
+      to measure instead of estimating. This page applies that to the site you are reading.
+    </p>
+  </header>
+
+  <section class="section" aria-labelledby="trace-h">
+    <header>
+      <h2 id="trace-h">Where the look comes from</h2>
+    </header>
+    <div class="prose">
+      <p>
+        <strong>Subject material.</strong> A loupe is the magnifier photographers and printers hold over a contact sheet on
+        a lightbox, and engineers hold over a drawing. The site borrows that bench: a viewing-booth grey for the page, lit
+        white sheets for things to read, crop marks only around the screenshot under the ring, and a darkroom with a
+        safelight when your system is in dark mode.
+      </p>
+      <p>
+        <strong>One accent, one job.</strong> The redline colour marks measured values and nothing else: a ratio, a size, a
+        count. If it isn’t a measurement, it isn’t red.
+      </p>
+      <p>
+        <strong>Type.</strong> Bricolage Grotesque for everything you read: headings, text, labels and measured numbers
+        (tabular figures). JetBrains Mono for code and commands only, the things you might type, so a command is never
+        mistaken for a sentence. Each is one variable file cut to Latin, about 26 KB and 8 KB; the browser fetches the
+        mono file only on a page that has code. Neither separates capital I from lowercase l as well as a
+        legibility-first family does, which is one of the things loupe’s type script measures; the review of the
+        rebuild, below, says what it found.
+      </p>
+      <p>
+        <strong>Against the landscape.</strong> The closest peer, <a href="https://impeccable.style">Impeccable</a>{' '}
+        (checked October 2026), also uses a grey paper ground, one saturated accent and a mono face. So the difference has
+        to come from mechanism rather than palette: the first thing on the home page is its headline, measured in your
+        browser; the accent marks only measured values; and the loupe ring does the inspecting.
+      </p>
+      <p>
+        <strong>Built to load fast.</strong> Every page is a static file on Cloudflare’s edge. The stylesheet is inline, the
+        font is preloaded from an HTTP <code>Link</code> header so the edge can send it as an early hint, the next page is
+        prefetched or prerendered when you point at a link, and anything that has to wait shows its shape, shimmering,
+        instead of a blank.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="color-h">
+    <header>
+      <h2 id="color-h">Colour roles</h2>
+      <p>Read from the stylesheet at build time.</p>
+    </header>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Light</th>
+            <th scope="col">Dark</th>
+            <th scope="col">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            colorRoles.map((role) => (
+              <tr>
+                <th scope="row"><code>--{role}</code></th>
+                <td><span class="swatch" style={`background:${t.light[role]!.value}`}></span> <code>{t.light[role]!.value}</code></td>
+                <td><span class="swatch" style={`background:${t.dark[role]!.value}`}></span> <code>{t.dark[role]!.value}</code></td>
+                <td class="muted">{t.light[role]!.note}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="contrast-h">
+    <header>
+      <h2 id="contrast-h">The pairs the build checks</h2>
+      <p>
+        Ratios are cut to two places, not rounded. The build checks these pairs, including hover and selected states, and
+        fails if any drops below its threshold.
+      </p>
+    </header>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Use</th>
+            <th scope="col">Pair</th>
+            <th scope="col" class="num">Needs</th>
+            <th scope="col" class="num">Light</th>
+            <th scope="col" class="num">Dark</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((r) => (
+              <tr>
+                <td>{r.use}</td>
+                <td><code>{r.fg} on {r.bg}</code></td>
+                <td class="num">{r.need}</td>
+                <td class="num"><span class="m">{r.light.r.toFixed(2)}</span></td>
+                <td class="num"><span class="m">{r.dark.r.toFixed(2)}</span></td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="space-h">
+    <header>
+      <h2 id="space-h">Space</h2>
+      <p>A 4-pixel base. Every gap between elements is one of these nine; tag padding and list indents are in em so they follow the text.</p>
+    </header>
+    <ul class="space-scale">
+      {
+        space.map(([name, px]) => (
+          <li>
+            <code>--{name}</code>
+            <span class="dim" style={`width:${px}px`}><i></i><span></span><i></i></span>
+            <span class="m">{px}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="motion-h">
+    <header>
+      <h2 id="motion-h">Motion</h2>
+    </header>
+    <dl class="facts">
+      <div>
+        <dt>Productive</dt>
+        <dd><span class="m">120 ms</span>, <code>cubic-bezier(0.3, 0, 0.2, 1)</code>. Link underlines, button fills, and the page crossfade out.</dd>
+      </div>
+      <div>
+        <dt>Expressive</dt>
+        <dd><span class="m">360 ms</span>, <code>cubic-bezier(0.2, 0.8, 0.2, 1)</code>. The loupe settling on a finding, and the new page settling in.</dd>
+      </div>
+      <div>
+        <dt>Waiting</dt>
+        <dd>A shimmer on placeholders, <span class="m">1.3 s</span> a pass. It shows only when something is really still arriving.</dd>
+      </div>
+      <div>
+        <dt>Reduced motion</dt>
+        <dd>Every duration becomes <span class="m">0 ms</span>, the shimmer stops, page transitions are off. The ring jumps instead of gliding.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="principles-h">
+    <header>
+      <h2 id="principles-h">Apple’s eight principles on this site</h2>
+    </header>
+    <dl class="facts">
+      {principles.map(([p, body]) => <div><dt>{p}</dt><dd>{body}</dd></div>)}
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="journeys-h">
+    <header>
+      <h2 id="journeys-h">Who visits and what each reads</h2>
+    </header>
+    <div class="sheet-grid">
+      {
+        journeys.map((j) => (
+          <div class="frame">
+            <h3>{j.who}</h3>
+            <ol class="journey">{j.steps.map((s) => <li>{s}</li>)}</ol>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    third && thirdFixes && (
+      <section class="section" aria-labelledby="third-h">
+        <header>
+          <h2 id="third-h">The third review, of the Astro rebuild</h2>
+          <p>
+            The site was rebuilt from Next.js to Astro on Cloudflare, with Bricolage Grotesque for text and JetBrains Mono for code. This
+            is loupe’s review of the rebuild, run by a separate Claude instance on the built site, and what changed after
+            it. Source: <a href={tree('site/review')}>site/review/</a>.
+          </p>
+        </header>
+        <div class="prose report" set:html={html(thirdFixes)} />
+        <details class="prose">
+          <summary>loupe’s report on the rebuild, unedited</summary>
+          <div class="report" set:html={html(third.replace(/^## .*\n/, ''), 1)} />
+        </details>
+      </section>
+    )
+  }
+
+  <section class="section" aria-labelledby="second-h">
+    <header>
+      <h2 id="second-h">The second review, for template tells</h2>
+    </header>
+    <div class="prose report" set:html={second} />
+  </section>
+
+  <section class="section" aria-labelledby="review-h">
+    <header>
+      <h2 id="review-h">The first review, before launch</h2>
+      <p>
+        Run with the skill on the built site before launch, by a separate Claude Opus instance. The report is unedited.
+        Source: <a href={tree('site/review')}>site/review/</a>.
+      </p>
+    </header>
+    <p>
+      <span class="m">{counts.blocker}</span> Blockers, <span class="m">{counts.major}</span> Major,
+      <span class="m">{counts.minor}</span> Minor and one grouped Polish row, plus one rework. What happened to each:
+    </p>
+    <div class="prose report" set:html={fixes} />
+    <details class="prose">
+      <summary>loupe’s report on this site, unedited</summary>
+      <div class="report" set:html={review} />
+    </details>
+    <p><a href="/cases">More reviews on the cases page</a></p>
+  </section>
+</Base>

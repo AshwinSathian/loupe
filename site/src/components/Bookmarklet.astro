@@ -1,0 +1,22 @@
+---
+import { bookmarklet } from '../lib/bookmarklet'
+
+// The link is built at build time from the skill's own measure.js, so the bookmarklet measures what a review measures.
+// The href is percent-encoded, so nothing in it can break out of the attribute.
+const { href, bytes } = bookmarklet()
+---
+
+<div class="bookmarklet" data-bookmarklet>
+  <a class="button secondary" href={href} data-run>loupe: measure</a>
+  <button type="button" class="button" data-copy-bookmarklet hidden>Copy bookmarklet</button>
+  <p class="hint">
+    Drag the first button to your bookmarks bar, or copy it and paste it as a bookmark’s address, which also works on a
+    phone. Clicking it here measures this page. <span class="m">{Math.round(bytes / 1024)} KB</span>, built from the
+    skill’s own script.
+  </p>
+  <p class="hint" role="status" data-status></p>
+</div>
+
+<script>
+  import '../scripts/bookmarklet'
+</script>
