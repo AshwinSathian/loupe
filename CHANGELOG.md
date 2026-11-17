@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2 (17 November 2026)
+
+- README reorganised after the READMEs of popular tools in the same space: install and a sample of real findings first, then why, what is measured, the CLI's options and exit codes, how it was tested, and what loupe will and won't do.
+- Stress-mode selectors inside a web component's shadow root now name the host and the element (`host >>> part`), as the keyboard walk's do; they used to repeat the same selector for sibling elements.
+- First release published to npm from GitHub Actions with trusted publishing and provenance.
+
 ## 2.0.1 (17 November 2026)
 
 - The CLI is on npm as `loupe-review` (the name `loupe` is taken): `npx -y loupe-review@2 <url>`. The command is still `loupe`. Releases publish from GitHub Actions with npm trusted publishing and provenance; no npm token is stored in the repository.

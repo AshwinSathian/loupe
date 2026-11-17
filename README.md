@@ -1,12 +1,53 @@
 # loupe
 
-[![CI](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml/badge.svg)](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/github/license/AshwinSathian/loupe)](LICENSE) [![Release](https://img.shields.io/github/v/release/AshwinSathian/loupe)](https://github.com/AshwinSathian/loupe/releases) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/AshwinSathian/loupe/badge)](https://scorecard.dev/viewer/?uri=github.com/AshwinSathian/loupe)
+[![CI](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml/badge.svg)](https://github.com/AshwinSathian/loupe/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/loupe-review?label=npm%20loupe-review)](https://www.npmjs.com/package/loupe-review) [![Release](https://img.shields.io/github/v/release/AshwinSathian/loupe)](https://github.com/AshwinSathian/loupe/releases) [![License: MIT](https://img.shields.io/github/license/AshwinSathian/loupe)](LICENSE) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/AshwinSathian/loupe/badge)](https://scorecard.dev/viewer/?uri=github.com/AshwinSathian/loupe)
 
-loupe is a Claude Code skill that reviews UI and UX against Apple's Human Interface Guidelines and the research around them. It measures what it can in the running app (contrast, targets, keyboard focus, accessible names, reflow, text spacing, localization), reads native source for what it can't run, says how strongly Apple states each rule it cites, and flags interfaces that look like every other template. Its measuring also runs on its own, without a model, as a CLI for CI. It covers iOS, iPadOS, macOS, iPhone Duo and the web, in SwiftUI, UIKit, React, Next.js, React Native, Expo, Angular, Vue or plain HTML.
+A design review for your coding agent that measures before it judges. loupe checks an interface against Apple's Human Interface Guidelines and the research around them, measures what it can in the running app, says how strongly Apple states each rule it cites, and tells you when a screen looks like every other template.
 
-**[loupe.ashwinsathian.com](https://loupe.ashwinsathian.com)** · [Method](https://loupe.ashwinsathian.com/method) · [Cases](https://loupe.ashwinsathian.com/cases) · [How it was tested](https://loupe.ashwinsathian.com/testing) · [Contrast checker and bookmarklet](https://loupe.ashwinsathian.com/tools)
+```bash
+npx skills add AshwinSathian/loupe
+```
+
+Then ask in plain words, from the repo you want reviewed: *"review the checkout flow at localhost:3000"*.
+
+iOS, iPadOS, macOS, iPhone Duo and the web, in SwiftUI, UIKit, React, Next.js, React Native, Expo, Angular, Vue or plain HTML. Built and tested in Claude Code; the skill uses the [Agent Skills](https://agentskills.io) format, so other agents that read `SKILL.md` can load it.
+
+**[loupe.ashwinsathian.com](https://loupe.ashwinsathian.com)** · [Method](https://loupe.ashwinsathian.com/method) · [Cases](https://loupe.ashwinsathian.com/cases) · [How it was tested](https://loupe.ashwinsathian.com/testing) · [Tools](https://loupe.ashwinsathian.com/tools)
 
 > loupe is an independent project. It is not affiliated with, endorsed by, or sponsored by Apple Inc. See [NOTICE](NOTICE).
+
+## Contents
+
+- [What a review looks like](#what-a-review-looks-like)
+- [Why](#why)
+- [Install](#install)
+- [Using it](#using-it)
+- [What it measures](#what-it-measures)
+- [The CLI, for CI](#the-cli-for-ci)
+- [How it was tested](#how-it-was-tested)
+- [What it will and won't do](#what-it-will-and-wont-do)
+- [What a review touches](#what-a-review-touches)
+- [Repository](#repository) · [Keeping the Apple digests current](#keeping-the-apple-digests-current) · [Contributing](#contributing) · [License](#license)
+
+## What a review looks like
+
+Three rows from a real report, shortened (the full rows also cite the Apple page each rule comes from): Claude Opus with loupe, reviewing a tool-library page written for the [held-out blind round](evals/heldout/) ([full report](evals/heldout/runs/opus/web-sloppy/skill.md)).
+
+| # | Finding | Where | Impact | Apple | Fix |
+|---|---|---|---|---|---|
+| 3 | Card meta text (category · note) is #a9b0ab on #fff at 2.21:1, 14 px, on all 6 cards. That includes "Back 14 Nov", the only explanation of why a tool can't be reserved. This fails WCAG 1.4.3 (needs 4.5:1). | Browse tools, every card `.meta`, index.html:33 | Blocker | Web | Use `--muted` #5f6b64 (5.56:1 on #fff, measured) and drop `--faint` for text. |
+| 5 | Changing **Loan length** rebuilds the whole dialog (`renderDlg()` on change). The chosen pickup date is cleared (measured: `2026-11-05` became `""`) and focus drops to `<body>`. Submit then fails with "Please fill out this field." | Reserve dialog, index.html:117 | Major | SHOULD | Don't re-render on change. Read both fields on submit, or store `date` from the input's `change` event and keep focus on the select. |
+| 6 | **Cancel** deletes a reservation on one click, with no confirm and no undo. The toast says "Done" for 3 s and focus falls to `<body>` (measured). | My reservations, Cancel button, index.html:106–108 | Major | SHOULD | Remove the row, then show a toast with an Undo button for at least 6 s: "Socket set reservation cancelled. Undo". |
+
+Each finding names the element and where it is, carries a measurement or a source line, and has two tags. **Impact** is Blocker, Major, Minor or Polish, and a Blocker needs evidence: a measured or source-confirmed WCAG A/AA failure; an Apple MUST on a native app whose breach stops the task, blocks an accessibility need or risks App Review rejection; data loss; deceptive design; or a task that can't be finished in a release build. **Apple** says how strongly Apple states the rule, copied from its wording (MUST, SHOULD, CONSIDER), or marks the check as Web, Research or Taste.
+
+After the findings come the category landscape (3 to 6 peers, with sources), a distinctiveness verdict, a measured verdict for each typeface, up to three reworks when the evidence clears a stated bar, up to 8 enhancements, a coverage table saying how each check family was checked (measured, from source, by eye, or not at all), and what it couldn't verify. loupe edits nothing until you pick findings by number; then it fixes those and measures again.
+
+## Why
+
+Ask a coding agent for a design review and it will find most of what is wrong; in loupe's blind round, reviews written without it found nearly every planted defect too. What goes wrong is the rest of the review. Contrast is estimated from hex values, severities inflate, and a well-built app gets a list of "critical" problems.
+
+loupe changes how findings are argued and rated. It measures contrast after compositing every translucent layer, walks the page with the keyboard, and stresses it with long and right-to-left text. Each rule it cites shows Apple's own strength, and a Blocker needs evidence. On the well-built control in the blind round, reviews with loupe reported no Blockers, while the same models without it put 10 findings in their top tier.
 
 ## Install
 
@@ -31,17 +72,62 @@ ln -s "$(pwd)/loupe" ~/.claude/skills/loupe
 
 To try it without installing: `claude --plugin-dir /path/to/loupe`. As a plugin the skill is named `loupe:loupe`; it also loads on its own when you ask for a design review.
 
-Measuring a running web app needs the Playwright MCP server (the `playwright` plugin, or any server exposing `browser_*` tools), or a shell where the bundled CLI can run (below). Without either, loupe works from source and screenshots and lists the measured checks as unverified. Native screenshots use `xcrun simctl` when a simulator is booted. The bundled scripts need Python 3.9 or later; Node is only needed to run the tests.
+**Requirements.** Measuring a running web app needs the Playwright MCP server (the `playwright` plugin, or any server exposing `browser_*` tools), or a shell where the bundled CLI can run. Without either, loupe works from source and screenshots and lists the measured checks as unverified. Native screenshots use `xcrun simctl` when a simulator is booted. The bundled scripts need Python 3.9 or later.
 
-## The CLI
+## Using it
 
-The measuring scripts run without a model, in Chromium, WebKit or Firefox. They are published to npm as [`loupe-review`](https://www.npmjs.com/package/loupe-review) (the name `loupe` was taken); the command is `loupe`:
+Ask from the repo you want reviewed:
+
+- "Review the checkout flow at http://localhost:3000/cart through to the confirmation page."
+- "Do a design review of SettingsView.swift and the screens it pushes."
+- "Audit our design system: tokens in src/styles/tokens.json and the components in src/ui."
+- "Whole-app review of this Expo app. A simulator is running it."
+- "Does this landing page look AI-made?" (with a screenshot)
+
+The first time, loupe drafts a `.loupe.md` profile from your design docs, tokens and manifests (purpose, audience, platforms, build SDK, density, brand, voice, waivers), asks about the gaps in one batch, and writes the file only after you confirm it. Edit it whenever you like; [references/profile-template.md](references/profile-template.md) documents every key.
+
+A review runs in steps: scope, profile, category research, intake and measurement, stress states, nine passes (slop scan, structure, visual, interaction and motion, content, accessibility, platform fit, distinctiveness, red team), then the report. Large apps are split across subagents. [Method](https://loupe.ashwinsathian.com/method) describes each step.
+
+## What it measures
+
+| Input | What is measured | Script |
+|---|---|---|
+| Running web app | Text contrast after compositing, targets with the WCAG 2.5.8 spacing exception, type sizes, motion that ignores reduced motion, template tells; at 390, 820 and 1440 px, light and dark, reduced motion on and off | [`measure-runner.js`](scripts/measure-runner.js) |
+| Running web app | A keyboard walk with real Tab presses: accessible names, visible focus, focus hidden under fixed bars, keyboard traps, reading order | [`interact-runner.js`](scripts/interact-runner.js) |
+| Running web app | Stress modes, each undone afterwards: 320 px reflow, WCAG text spacing, 200% text, pseudo-localized text 40% longer, right-to-left | [`stress-runner.js`](scripts/stress-runner.js) |
+| Typefaces | Confusable glyphs (I and l), x-height, tabular figures, script coverage | [`type-eval.js`](scripts/type-eval.js) |
+| SwiftUI, UIKit, React Native source | Fixed font sizes, Dynamic Type caps, images read aloud by file name, tap gestures with no button trait; which SDK the app is built with, which decides the Liquid Glass checks | [`swift_scan.py`](scripts/swift_scan.py) |
+| Booted simulator | Screenshots in light, dark and AX5 text, double-length strings and right-to-left, through Xcode's launch arguments | `xcrun simctl` |
+| Design tokens | WCAG contrast for the text and background pairs components use, in every mode of DTCG 2025.10 files | [`tokens.py`](scripts/tokens.py) |
+| Screenshots | Contrast sampled from pixels | [`png_contrast.py`](scripts/png_contrast.py) |
+
+Everything else is judged, and the report says which is which.
+
+## The CLI, for CI
+
+The web measuring runs without a model, in Chromium, WebKit or Firefox. It is on npm as [`loupe-review`](https://www.npmjs.com/package/loupe-review) (the name `loupe` was taken); the command is `loupe`.
 
 ```bash
-npx -y loupe-review@2 http://localhost:3000/settings
+npx -y playwright@1.64.1 install chromium
+npx -y loupe-review@2 http://localhost:3000/ http://localhost:3000/settings
 ```
 
-The first run needs the browser build its Playwright expects: `npx -y playwright@1.64.1 install chromium` (the CLI prints this command if the browser is missing). It prints a markdown summary; `--json out.json` writes every finding. Only measured problems that no WCAG exception covers fail the run (contrast, 24 px targets, unnamed focusable controls, keyboard traps outside dialogs, focus entirely hidden); heuristics such as a missing focus style or text that clips under stress are warnings. `loupe --help` lists every option.
+It prints a markdown summary. Only measured problems that no WCAG exception covers fail a run: text contrast, targets under 24 px without the spacing exception, a focusable control with no name, a keyboard trap outside a dialog, and focus hidden entirely under fixed content. Heuristics, such as a missing focus style or text that clips under stress, are warnings.
+
+| Option | Does |
+|---|---|
+| `--only measure,interact,stress` | Run some of the three runners (default: all) |
+| `--browser chromium\|webkit\|firefox` | Engine; WebKit is walked with Option-Tab, as Safari skips links on Tab |
+| `--widths 390,1440` | Widths for measuring and stress |
+| `--storage-state <file>` | Playwright storage state, for pages behind a sign-in |
+| `--wait-for <selector>` | Wait for an element before measuring |
+| `--json <file>`, `--md <file>` | Write every finding as JSON, or the summary as markdown |
+| `--baseline <file>` | Compare with a baseline: new, fixed and still-present findings |
+| `--update-baseline` | Write the current findings to the baseline file |
+| `--fail-on new\|any\|none` | What fails the run (default `new` with a baseline, else `any`) |
+| `--allow-file` | Allow `file:` URLs |
+
+Exit codes: `0` pass, `1` findings at the `--fail-on` level, `2` usage, page-load or browser error.
 
 In CI, commit a baseline once, then fail only on new findings:
 
@@ -62,60 +148,57 @@ jobs:
       - run: npx -y loupe-review@2 http://localhost:3000/ http://localhost:3000/settings --baseline loupe-baseline.json --md "$GITHUB_STEP_SUMMARY"
 ```
 
-Write the baseline on the same runner image (`--update-baseline`): fonts differ between machines, and with them text widths and target sizes. Point it only at pages you control, and keep secrets out of the job: the browser runs whatever the page runs.
+Finding ids come from the rule, the role, the text and the colours, not the element's position, so adding a list item doesn't turn one finding into a new one and a fixed one. Write the baseline on the same runner image as the check: fonts change text widths and target sizes. Point it only at pages you control, and keep secrets out of the job, because the browser runs whatever the page runs.
 
-## Using it
+## How it was tested
 
-Ask from the repo you want reviewed:
+**The review.** A pre-registered blind round on three fixtures written by model instances that never saw loupe's rules: a flawed web page, a well-built web app, and a SwiftUI app. Claude Haiku, Sonnet and Opus each reviewed every fixture with and without loupe, and three Claude judges compared the pairs without being told which was which.
 
-- "Review the checkout flow at http://localhost:3000/cart through to the confirmation page."
-- "Do a design review of SettingsView.swift and the screens it pushes."
-- "Audit our design system: tokens in src/styles/tokens.json and the components in src/ui."
-- "Whole-app review of this Expo app. A simulator is running it."
-- "Does this landing page look AI-made?" (with a screenshot)
+- Judges preferred loupe's review in 6 of 9 pairs.
+- loupe did not find more. Both conditions found nearly every planted defect, and the round's recall rule failed by half a defect with Haiku, so the round failed one of its four rules.
+- loupe's reviews had fewer findings judged wrong (24 against 38) or inflated (40 against 52), and no Blockers on the well-built app.
 
-The first time, loupe drafts a `.loupe.md` profile from your design docs, tokens and manifests (purpose, audience, platforms, build SDK, density, brand, voice, waivers), asks about the gaps in one batch, and writes the file only after you confirm it. Edit it whenever you like; [references/profile-template.md](references/profile-template.md) documents every key.
+Everything is in [evals/heldout/](evals/heldout/): the pre-registration, fixtures, all 18 reports, the judges' answers, the keys, and [notes on the result](evals/heldout/notes.md). Later development cases, including prompt injection aimed at loupe, are in [evals/cases.md](evals/cases.md) and [evals/results/](evals/results/).
 
-## What a review contains
+**The measuring engine.**
 
-Each finding names the element and the screen (or file and line) and carries two tags. Impact is Blocker, Major, Minor or Polish, and a Blocker needs evidence of one of these: a measured or source-confirmed WCAG A/AA failure; an Apple MUST on a native app whose breach stops the task, blocks an accessibility need or risks App Review rejection; data loss; deceptive design; or a task that can't be finished in a release build. The Apple column says how strongly Apple states the rule (MUST, SHOULD or CONSIDER, copied from Apple's wording), or marks the check as Web, Research or Taste.
+- `npm run eval:mutation` plants 12 defects at WCAG boundaries (4.48 against 4.54:1, 23 against 24 px) in a clean page, plus 8 decoys that look wrong but pass, with the operators committed under a sha256 before each run. Round 2 detected 12 of 12 and stayed quiet on all 8 decoys. Round 1 found two operators that didn't encode their defect and one engine false positive ([notes](evals/mutation/notes.md)). The same author wrote the engine and the operators, so this is an upper bound.
+- `npm run eval:act` runs the W3C ACT Rules test cases, written by others, for the 11 rules the engine covers. It caught 40 of 58 failing cases, with 10 false alarms in 125 passing ones; [the notes](evals/act/notes.md) explain every miss.
 
-After the findings: the category landscape (3 to 6 peers, with sources), a distinctiveness verdict with theming sketches when the product has no direction yet, a measured verdict for each typeface, up to three reworks (only when the evidence clears a stated bar; "no rework warranted" is the usual answer for a well-built product), up to 8 enhancements, a coverage table saying how each check family was checked (measured, from source, by eye, or not at all), and a list of what it couldn't verify. loupe edits nothing until you pick findings to fix, and then measures again.
+**The code.** `npm install && npx playwright install chromium && npm test` runs the scripts and the CLI against fixtures in Chromium (WebKit and Firefox too, when installed), plus the Python scripts and the maintenance tools. CI runs the same on every pull request, with CodeQL.
+
+## What it will and won't do
+
+- **Apple is the core.** Outside research adds to Apple's guidance and never replaces it. Each outside check says whether it adds to an Apple rule, covers ground Apple leaves open, or conflicts with Apple, and a conflict is shown in the finding rather than settled quietly.
+- **Measured, or said to be unmeasured.** A Blocker needs a measurement, a source line or a confirmed failure. What couldn't be measured is listed, with what would verify it.
+- **The product's look stays the product's.** loupe applies Apple's reasoning to your brand. It never proposes making a product look like Apple's, a competitor's or a trend, Liquid Glass included.
+- **"No rework warranted" is the usual answer.** A rework is proposed only when the evidence clears a stated bar; for a well-built product the report says so.
+- **Your files stay yours.** Nothing is edited until you pick findings to fix.
 
 ## What a review touches
 
-Before you pick fixes, loupe writes only the `.loupe.md` you confirm. It does have side effects, listed in each report's run notes: Playwright saves screenshots to `.playwright-mcp/`; simulator appearance and text size are changed while capturing and then restored, and stress modes relaunch the app with Xcode's launch arguments; the keyboard walk moves focus, so the page's focus handlers run; stress modes and error and offline states are applied in the browser and undone; clearing app data for empty states needs your OK first. The landscape step searches the web; say "no web" to skip it.
+Before you pick fixes, loupe writes only the `.loupe.md` you confirm. It does have side effects, listed in each report's run notes:
+
+- Playwright saves screenshots to `.playwright-mcp/`.
+- Simulator appearance and text size change while capturing and are then restored; native stress modes relaunch the app with Xcode's launch arguments.
+- The keyboard walk moves focus, so the page's focus handlers run.
+- Stress modes and error and offline states are applied in the browser and undone.
+- Clearing app data for empty states needs your OK first.
+- The landscape step searches the web; say "no web" to skip it.
 
 Text that loupe reads from your pages and from the web reaches the model as evidence. The skill treats it as data and never as instructions, but don't point it at pages you wouldn't paste into a chat.
 
-## Testing
-
-`npm install && npx playwright install chromium && npm test` runs the measurement, keyboard and stress scripts and the CLI against fixtures in Chromium (WebKit and Firefox too, when installed), plus the Python scripts and the maintenance tools. CI runs the same on every pull request.
-
-Two evals score the measuring engine on its own:
-
-- `npm run eval:mutation` plants 12 defects at WCAG boundaries (4.48 against 4.54:1, 23 against 24 px) in a clean page, and 8 decoys that look wrong but pass. The operators are committed with a sha256 before each run. Round 2 detected 12 of 12 and stayed quiet on all 8 decoys, after round 1 found two operators that didn't encode their defect and one engine false positive ([notes](evals/mutation/notes.md)).
-- `npm run eval:act` runs the W3C ACT Rules test cases, written by others, for the 11 rules the engine covers. It caught 40 of 58 failing cases with 10 false alarms in 125 passing ones; [the notes](evals/act/notes.md) list every miss.
-
-The review itself was tested in a pre-registered blind round on three fixtures written by model instances that never saw loupe's rules: a flawed web page, a well-built web app, and a SwiftUI app. Claude Haiku, Sonnet and Opus each reviewed every fixture with and without loupe, and three Claude judges compared the pairs without being told which was which.
-
-- Judges preferred loupe's review in 6 of 9 pairs.
-- Both conditions found nearly every planted defect. loupe did not find more; the round's recall rule failed by half a defect with Haiku, so the round failed one of its four rules.
-- loupe's reviews had fewer findings judged wrong (24 against 38) or inflated (40 against 52), and no Blockers on the well-built app, where the reviews without it put 10 findings in their top severity tier.
-
-Everything is in [evals/heldout/](evals/heldout/): the pre-registration, fixtures, all 18 reports, the judges' answers, the keys, and [notes on the result](evals/heldout/notes.md). The `evals/cases.md` cases are earlier development tests on fixtures the rules were tuned against.
-
-## What's in here
+## Repository
 
 ```
 SKILL.md                   the workflow and the rules (under 5,000 tokens)
-bin/, lib/                 the CLI and its finding ids, severities and baseline diff
 references/workflow-*.md   detail for each step, loaded when the step runs
 references/apple/          paraphrased digests of Apple's guidance, tagged MUST / SHOULD / CONSIDER
 references/augment/        outside research, each check labelled against Apple; red team, landscape, typography
 references/slop-catalog.md dated catalog of template tells, kept apart from Apple's rules
 references/writing.md      interface copy rules
 scripts/                   measure, keyboard and stress runners, type-eval.js, swift_scan.py, tokens.py, contrast.py, png_contrast.py
+bin/, lib/                 the CLI and its finding ids, severities and baseline diff
 research/digests/          the source digests the references were built from, with their sources
 evals/                     review evals (development cases, the held-out blind round) and engine evals (mutation, ACT)
 tools/                     snapshot diff, number check, contents check
