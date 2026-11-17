@@ -107,6 +107,17 @@ test("contrast: ancestor opacity reduces contrast; opacity 0 skipped", async () 
   assert.equal(by(c, "#gone"), undefined);
 });
 
+test("defaults: gradient text and glow shadows on a dark page", async () => {
+  const r = await measure("glow");
+  assert.match(tells(r), /gradient text \(background-clip: text\) :: #hero: "Build faster"/);
+  assert.match(tells(r), /glow shadows on a dark page \(3 elements\)/);
+});
+
+test("defaults: the same glow on a light page and a plain heading are not flagged", async () => {
+  const r = await measure("glow-light");
+  assert.doesNotMatch(tells(r), /gradient text|glow shadows/);
+});
+
 test("defaults: Tailwind v3 and v4 ramps", async () => {
   assert.match(tells(await measure("ramp-v3")), /slate \(v3\) ramp/);
   assert.match(tells(await measure("ramp-v4")), /gray \(v4\) ramp/);

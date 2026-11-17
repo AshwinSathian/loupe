@@ -411,6 +411,25 @@
     return (bi.match(COLOR_RE) || []).some((v) => { const c = parseColor(v); const h = c && hue(c); return h !== null && h !== undefined && h >= 230 && h <= 290; });
   });
   if (grads.length) defaults.push({ tell: "indigo/violet gradient background", evidence: grads.slice(0, 5).map(selectorOf).join(", ") });
+  // Gradient text: background-clip: text over a gradient (it also vanishes in forced colours).
+  const gradText = all.filter((el) => { const s = cs(el); return (s.backgroundClip === "text" || s.webkitBackgroundClip === "text") && /gradient\(/.test(s.backgroundImage) && visible(el); });
+  if (gradText.length) defaults.push({ tell: "gradient text (background-clip: text)", evidence: gradText.slice(0, 5).map((el) => `${selectorOf(el)}: "${clip(el.textContent.trim(), 30)}"`).join("; ") });
+  // Glow: on a dark page, more than 2 elements with an unoffset, blurred (12 px or more), saturated shadow.
+  const bodyBg = parseColor(cs(document.body).backgroundColor) || parseColor(cs(document.documentElement).backgroundColor);
+  const darkPage = bodyBg && bodyBg.a > 0.5 && (bodyBg.r + bodyBg.g + bodyBg.b) / 3 < 64;
+  if (darkPage) {
+    const SH = /(rgba?\([^)]*\))\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px/g;
+    const glows = all.filter((el) => {
+      const bs = cs(el).boxShadow;
+      if (!bs || bs === "none") return false;
+      for (const m of bs.matchAll(SH)) {
+        const c = parseColor(m[1]);
+        if (c && Math.abs(+m[2]) <= 2 && Math.abs(+m[3]) <= 2 && +m[4] >= 12 && hue(c) !== null) return visible(el);
+      }
+      return false;
+    });
+    if (glows.length > 2) defaults.push({ tell: `glow shadows on a dark page (${glows.length} elements)`, evidence: glows.slice(0, 5).map(selectorOf).join(", ") });
+  }
 
   // Eyebrows: a short label straight before a page or section heading (h1, h2), set apart by caps,
   // tracking or a size below body text, on 3 or more headings and at least half of them (slop

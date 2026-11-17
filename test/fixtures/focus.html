@@ -1,0 +1,18 @@
+<!doctype html><html><head><style>
+body{margin:0;font:16px sans-serif;background:#fff}
+#none:focus{outline:none}
+#faint:focus{outline:2px solid #ddd}
+#jump:focus,#good:focus{outline:2px solid #1a4fd6}
+footer{position:fixed;bottom:0;left:0;right:0;height:120px;background:#eee}
+.spacer{height:2000px}
+#under{position:absolute;top:calc(100vh - 80px);left:20px}
+</style></head><body>
+<a id="good" href="#a">Good link</a>
+<button id="none">No ring</button>
+<button id="faint">Faint ring</button>
+<button id="icon"><svg width="16" height="16" aria-hidden="true"><rect width="16" height="16"/></svg></button>
+<span id="jump" tabindex="3">Jumps the queue</span>
+<a id="under" href="#b">Under footer</a>
+<div class="spacer"></div>
+<footer>Sticky footer</footer>
+</body></html>
