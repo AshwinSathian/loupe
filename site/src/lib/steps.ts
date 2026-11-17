@@ -7,11 +7,11 @@ const bodies: Record<string, string> = {
   '0 Scope': 'Settles what is under review (a screen, a flow, the whole app or a design system) and what it has to work from.',
   '1 Profile': 'Reads your design docs, tokens and manifests, asks what it can’t find in one batch, and saves a .loupe.md once you confirm it.',
   '1b Landscape': 'Researches your category and 3 to 6 peers, with sources and dates, so proposals reflect what the best products do now.',
-  '2 Intake': 'On the web: contrast, targets, type and motion at three widths, light and dark, reduced motion on and off. On Apple platforms: the source, and the simulator if one is running.',
-  '3 Stress states': 'Tries the states demos skip: empty, error, offline, long text, the largest text size, right-to-left.',
+  '2 Intake': 'On the web: contrast, targets, type and motion at three widths, light and dark, reduced motion on and off, then a keyboard walk with real Tab presses. On Apple platforms: a scan of the source, and the simulator if one is running.',
+  '3 Stress states': 'Tries the states demos skip: empty, error, offline, a 320-pixel window, wider text spacing, translated and right-to-left text, the largest text size. Each is undone afterwards.',
   '4 Passes': 'Nine passes against Apple’s guidance, ending with a red team that attacks the premise, the flows and its own draft.',
   '5 Whole-app split': 'Splits a large app across subagents, then merges the results with a fresh red team.',
-  '6 Report': 'Findings with two tags, the landscape, a distinctiveness verdict, up to three reworks, and what it couldn’t verify.',
+  '6 Report': 'Findings with two tags, the landscape, a distinctiveness verdict, up to three reworks, a table of how each check was done, and what it couldn’t verify.',
   '7 Offer fixes': 'Edits nothing until you pick findings by number. Then fixes those and measures again.',
 }
 

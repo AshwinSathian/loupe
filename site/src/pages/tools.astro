@@ -2,16 +2,17 @@
 import Base from '../layouts/Base.astro'
 import Bookmarklet from '../components/Bookmarklet.astro'
 import ContrastChecker from '../components/ContrastChecker.astro'
-import { blob, breadcrumb } from '../lib/site'
+import Command from '../components/Command.astro'
+import { blob, breadcrumb, install, site } from '../lib/site'
 
 const description =
-  'A WCAG contrast checker that composites translucent colours the way a browser does, and a bookmarklet that runs loupe’s measurement script on any page.'
+  'A WCAG contrast checker that composites translucent colours the way a browser does, a bookmarklet that runs loupe’s measurement script on any page, and a CLI that runs loupe’s measuring in CI.'
 ---
 
 <Base title="Tools" description={description} path="/tools" card="tools" schema={[breadcrumb(['Tools', '/tools'])]}>
   <header class="page-head">
     <h1>Measure it yourself</h1>
-    <p class="lede">Two pieces of loupe that work without Claude. Both run in your browser and send nothing anywhere.</p>
+    <p class="lede">Three pieces of loupe that work without Claude. The first two run in your browser and send nothing anywhere; the third runs on your machine or in CI.</p>
   </header>
 
   <section class="section" aria-labelledby="contrast-h">
@@ -41,6 +42,34 @@ const description =
       It measures one width, one colour scheme and one motion setting: whatever your browser has now. A review measures
       twelve combinations. Some sites block bookmarklets with a Content Security Policy. If nothing happens when you
       click it, that is the likely reason; the browser console shows the block.
+    </p>
+  </section>
+  <section class="section" aria-labelledby="cli-h">
+    <header>
+      <h2 id="cli-h">Measure in CI</h2>
+      <p>
+        <a href={blob('bin/loupe.mjs')}>bin/loupe.mjs</a> runs the three scripts a review runs on a web page, with no model: the
+        measurement at three widths, light and dark, with and without reduced motion; a keyboard walk with real Tab
+        presses; and the stress modes (a 320-pixel window, wider text spacing, 200% text, translated and right-to-left
+        text). It works in Chromium, WebKit and Firefox and prints a markdown summary or JSON.
+      </p>
+    </header>
+    <Command text={install.cli} label="CLI commands" />
+    <p>
+      Only measured problems that no WCAG exception covers fail the run: text contrast, targets under 24 pixels without
+      the spacing exception, a focusable control with no name, a keyboard trap outside a dialog, and focus hidden
+      entirely under a fixed bar. Everything that needs judgement, such as a missing focus style or text that clips
+      under stress, is a warning. A review rates the same rows by its own rules and confirms the warnings first.
+    </p>
+    <p>
+      With <code>--baseline</code> it compares the run with a committed file and fails only on new findings. Finding ids
+      come from the rule, the role, the text and the colours rather than the element’s position, so adding a list item
+      doesn’t turn one finding into a new one and a fixed one. Write the baseline on the same machine image as the check:
+      fonts change text widths. The <a href={blob('README.md#the-cli')}>README</a> has a GitHub Actions workflow.
+    </p>
+    <p class="hint">
+      Version {site.version}. Point it only at pages you control, and keep secrets out of the job: the browser runs whatever
+      the page runs.
     </p>
   </section>
 </Base>

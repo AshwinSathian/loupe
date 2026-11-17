@@ -4,7 +4,7 @@ What this measures: whether loupe's measurement engine (the measure, interact an
 
 ## Round 1 (2026-11-17)
 
-Operators committed in `7a6fb5b`-era history with `operators.sha256` before the first run. Result: `result-round1.json`. Base page not clean; defects detected 10 of 12; decoys clean 7 of 8.
+Operators committed in `6ffe983` with `operators.sha256` before the first run. Result: `result-round1.json`. Base page not clean; defects detected 10 of 12; decoys clean 7 of 8.
 
 Every miss, read before changing anything:
 
@@ -15,4 +15,6 @@ Every miss, read before changing anything:
 
 ## Round 2
 
-Operators and base re-committed with a new `operators.sha256` before the run. Result: `result.json`.
+Operators and base re-committed in `2acfc67` with a new `operators.sha256` before the run. Result: `result.json`. Base page clean; defects detected 12 of 12; decoys clean 8 of 8.
+
+Round 2 passing everything is the expected outcome of fixing round 1's operator errors, not evidence of an engine that cannot miss: every operator here was written knowing how the engine works. Heuristic rules (focus-visible, the stress rows) are warnings in the CLI and leads in a review for that reason.

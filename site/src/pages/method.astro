@@ -4,7 +4,7 @@ import { html, section } from '../lib/md'
 import { article, blob, breadcrumb } from '../lib/site'
 
 const description =
-  'How loupe reviews an interface: the profile, category research, measurement, stress states, nine passes, the red team, and the rules that decide what counts as a Blocker.'
+  'How loupe reviews an interface: the profile, category research, measurement, a keyboard walk, stress states, nine passes, the red team, and the rules that decide what counts as a Blocker.'
 const rules = html(section('SKILL.md', 'Rules'))
 const bar = html(section('references/augment/red-team.md', 'The rework bar'))
 ---
@@ -47,8 +47,23 @@ const bar = html(section('references/augment/red-team.md', 'The rework bar'))
       at 12 pixels, x-height, tabular figures, and script coverage.
     </p>
     <p>
-      Anything it can’t measure, it lists under Unverified with what would verify it. You can run the measurement script
-      in your own browser on the <a href="/tools">tools page</a>.
+      Then it walks the page with the keyboard, pressing Tab as a person would: the name a screen reader would read at
+      each stop, whether focus shows at all, whether a fixed bar hides the focused control, and whether any widget
+      keeps focus and won’t let it go. It stresses each screen in place: a 320-pixel window, wider letter and line
+      spacing, text at twice the size, text 40% longer with accented letters, and right-to-left, keeping only the
+      clipping and overflow each one caused, and undoing each before the next.
+    </p>
+    <p>
+      On Apple platforms it scans the source for text that ignores Dynamic Type, images read aloud by their file name, and
+      tap targets VoiceOver doesn’t announce as buttons, and reads the SDK the app was built with to decide which Liquid
+      Glass rules apply. It relaunches the simulator with Xcode’s own stress modes: double-length strings,
+      right-to-left, the largest text size. For a design system, it checks the colour pairs the components use in every
+      mode of the token files.
+    </p>
+    <p>
+      Every report ends with a coverage table: each check family marked measured, read in source, judged by eye, or not
+      checked, with the evidence. Anything it can’t measure, it lists under Unverified with what would verify it. The
+      same scripts run without Claude on the <a href="/tools">tools page</a> and in CI.
     </p>
 
     <h2 id="rules-h">The rules, quoted from the skill</h2>
