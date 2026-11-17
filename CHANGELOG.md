@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 (17 November 2026)
+
+- The CLI is on npm as `loupe-review` (the name `loupe` is taken): `npx -y loupe-review@2 <url>`. The command is still `loupe`. Releases publish from GitHub Actions with npm trusted publishing and provenance; no npm token is stored in the repository.
+- `main` now also requires the site build and CodeQL to pass before a merge.
+
 ## 2.0.0 (17 November 2026)
 
 loupe 1.x measured the web page as it looked after load, and nothing else: keyboard use, stress states, native apps and tokens were judged by eye, and its own eval could not fail on recall. 2.0 measures those too, runs without a model in CI, says in every report what it checked, and is scored against test cases written by other people.

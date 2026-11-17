@@ -30,7 +30,7 @@ export const nav = [
 export const install = {
   skills: 'npx skills add AshwinSathian/loupe',
   plugin: '/plugin marketplace add AshwinSathian/loupe\n/plugin install loupe@loupe',
-  cli: `npx -y playwright@${pkg.dependencies.playwright} install chromium\nnpx -y github:AshwinSathian/loupe#v${plugin.version} http://localhost:3000/`,
+  cli: `npx -y playwright@${pkg.dependencies.playwright} install chromium\nnpx -y loupe-review@${plugin.version} http://localhost:3000/`,
   symlink:
     'git clone https://github.com/AshwinSathian/loupe.git\nmkdir -p ~/.claude/skills\nln -s "$(pwd)/loupe" ~/.claude/skills/loupe',
 }

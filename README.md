@@ -35,10 +35,10 @@ Measuring a running web app needs the Playwright MCP server (the `playwright` pl
 
 ## The CLI
 
-The measuring scripts run without a model, in Chromium, WebKit or Firefox:
+The measuring scripts run without a model, in Chromium, WebKit or Firefox. They are published to npm as [`loupe-review`](https://www.npmjs.com/package/loupe-review) (the name `loupe` was taken); the command is `loupe`:
 
 ```bash
-npx -y github:AshwinSathian/loupe#v2.0.0 http://localhost:3000/settings
+npx -y loupe-review@2 http://localhost:3000/settings
 ```
 
 The first run needs the browser build its Playwright expects: `npx -y playwright@1.64.1 install chromium` (the CLI prints this command if the browser is missing). It prints a markdown summary; `--json out.json` writes every finding. Only measured problems that no WCAG exception covers fail the run (contrast, 24 px targets, unnamed focusable controls, keyboard traps outside dialogs, focus entirely hidden); heuristics such as a missing focus style or text that clips under stress are warnings. `loupe --help` lists every option.
@@ -59,7 +59,7 @@ jobs:
         with: { node-version: 22 }
       - run: npm ci && npm run build && (npm run start &) && npx wait-on http://localhost:3000
       - run: npx -y playwright@1.64.1 install --with-deps chromium
-      - run: npx -y github:AshwinSathian/loupe#v2.0.0 http://localhost:3000/ http://localhost:3000/settings --baseline loupe-baseline.json --md "$GITHUB_STEP_SUMMARY"
+      - run: npx -y loupe-review@2 http://localhost:3000/ http://localhost:3000/settings --baseline loupe-baseline.json --md "$GITHUB_STEP_SUMMARY"
 ```
 
 Write the baseline on the same runner image (`--update-baseline`): fonts differ between machines, and with them text widths and target sizes. Point it only at pages you control, and keep secrets out of the job: the browser runs whatever the page runs.
