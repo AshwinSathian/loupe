@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbour Bookings: Settings</title>
+<style>
+:root { --fg: #1b1e23; --muted: #4b5361; --bg: #fff; --line: #7d8592; --accent: #0a57c2; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 1rem/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); padding-bottom: 2rem; }
+header, main { max-width: 52rem; margin: 0 auto; padding: 1rem; }
+nav { display: flex; gap: .25rem; }
+nav a { display: inline-block; width: 7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: .6rem .5rem; color: var(--accent); }
+a:focus { outline: none; }
+button { font: inherit; min-height: 2.75rem; padding: 0 1rem; border-radius: .5rem; border: 1px solid var(--line); background: #fff; color: var(--fg); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.card { border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; margin: 1rem 0; }
+.plans { display: flex; gap: 1rem; width: 600px; }
+.plan { flex: 1; border: 1px solid var(--line); border-radius: .5rem; padding: .75rem; }
+.policy { height: 3rem; overflow: hidden; }
+.days { display: flex; gap: .25rem; }
+.days button { width: 2.75rem; padding: 0; }
+#cookies { position: fixed; left: 0; right: 0; bottom: 0; padding: 1rem; background: #f3f4f6; border-top: 1px solid var(--line); min-height: 9rem; }
+</style>
+</head>
+<body>
+<header>
+  <nav aria-label="Settings sections"><a href="#general">General</a><a href="#availability">Availability</a><a href="#notifications">Notifications</a><a href="#billing">Billing</a></nav>
+</header>
+<main>
+  <h1>Booking settings</h1>
+  <section class="card" id="availability">
+    <h2>Availability</h2>
+    <p>Pick the first day guests can book.</p>
+    <div class="days" id="days" role="group" aria-label="First bookable day">
+      <button type="button">Mon</button><button type="button">Tue</button><button type="button">Wed</button>
+    </div>
+    <div style="margin-top:1rem; display:flex; gap:.5rem; align-items:center">
+      <button type="button" id="save">Save availability</button>
+      <button type="button" id="more"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="2" fill="currentColor"/><circle cx="10" cy="10" r="2" fill="currentColor"/><circle cx="16" cy="10" r="2" fill="currentColor"/></svg></button>
+    </div>
+  </section>
+  <section class="card" id="billing">
+    <h2>Plan</h2>
+    <div class="plans"><div class="plan"><strong>Starter</strong><br>Up to 20 bookings a month</div><div class="plan"><strong>Harbour</strong><br>Unlimited bookings and a waitlist</div></div>
+    <p class="policy">Cancellation policy: guests can cancel for free up to 48 hours before arrival. After that the first night is charged.</p>
+  </section>
+  <p><a href="#terms" id="terms">Terms of service</a> · <a href="#privacy" id="privacy">Privacy</a></p>
+</main>
+<div id="cookies">We use one cookie to keep you signed in. <button type="button" id="ok">OK</button></div>
+<script>
+// Day picker: arrow-key roving would be right; instead Tab is captured and wraps inside the group.
+const days = [...document.querySelectorAll('#days button')];
+days.forEach((b, i) => b.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); days[(i + 1) % days.length].focus(); }
+}));
+</script>
+</body>
+</html>
