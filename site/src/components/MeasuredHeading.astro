@@ -1,0 +1,25 @@
+---
+// The hero headline, measured in the visitor's browser and judged the way a review judges it. The readout is in the
+// HTML as shimmering placeholders, so it holds its place; the numbers arrive once they are real, and update with
+// width, zoom, fonts and colour scheme.
+---
+
+<div class="measured">
+  <h1><slot /></h1>
+  <div class="vdim" aria-hidden="true">
+    <i></i>
+    <span dir="ltr">&nbsp;</span>
+    <i></i>
+  </div>
+  <figure class="spec">
+    <dl>
+      <div><dt>Size</dt><dd data-size>&nbsp;</dd></div>
+      <div data-contrast-row><dt>Contrast</dt><dd data-contrast>&nbsp;</dd></div>
+    </dl>
+    <figcaption>This headline, measured in your browser.</figcaption>
+  </figure>
+</div>
+
+<script>
+  import '../scripts/measured'
+</script>

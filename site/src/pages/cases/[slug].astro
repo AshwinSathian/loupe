@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro'
+import { cases, getCase, MODELS, report } from '../../lib/cases'
+import { html } from '../../lib/md'
+import { verdictFor } from '../../lib/results'
+import { blob, breadcrumb, install } from '../../lib/site'
+
+export const getStaticPaths = () => cases().map((c) => ({ params: { slug: c.slug } }))
+
+const Model = (m: string) => `Claude ${m[0]!.toUpperCase()}${m.slice(1)}`
+
+const c = getCase(Astro.params.slug!)!
+const all = cases()
+const next = all[(all.findIndex((x) => x.slug === c.slug) + 1) % all.length]!
+const present = MODELS.filter((m) => report(m, c.fixture, 'skill'))
+// Rendered here, once per report, so the page ships finished HTML.
+const rendered = present.map((m) => {
+  const skill = report(m, c.fixture, 'skill')!
+  const base = report(m, c.fixture, 'baseline')
+  return { m, skill: html(skill.md, 2), base: base ? html(base.md, 2) : null, verdict: verdictFor(m, c.fixture) }
+})
+---
+
+<Base
+  title={c.title}
+  description={c.summary}
+  path={`/cases/${c.slug}`}
+  card={`case-${c.slug}`}
+  schema={[breadcrumb(['Cases', '/cases'], [c.title, `/cases/${c.slug}`])]}
+>
+  <header class="page-head">
+    <p class="eyebrow">{c.kind}</p>
+    <h1>{c.title}</h1>
+    <p class="lede">{c.summary}</p>
+    <dl class="facts">
+      <div><dt>Input</dt><dd>{c.input}</dd></div>
+      <div>
+        <dt>Fixture</dt>
+        <dd><a href={blob(`evals/heldout/fixtures/${c.fixture}`)}>evals/heldout/fixtures/{c.fixture}</a></dd>
+      </div>
+    </dl>
+    <nav aria-label="Reports on this page" class="jump">
+      <ul>
+        {
+          present.map((m) => (
+            <li>
+              <a href={`#${m}-h`}>{Model(m)} with loupe</a> · <a href={`#${m}-base`}>without</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </header>
+  {
+    rendered.map(({ m, skill, base, verdict }) => (
+      <article class="section" aria-labelledby={`${m}-h`}>
+        <header>
+          <h2 id={`${m}-h`}>{Model(m)}: loupe’s report</h2>
+          {verdict && <p>{verdict}</p>}
+        </header>
+        <div class="frame report-frame">
+          <div class="prose report" set:html={skill} />
+        </div>
+        {base && (
+          <details id={`${m}-base`}>
+            <summary>{Model(m)} without loupe: the review it wrote with no skill</summary>
+            <div class="prose report" set:html={base} />
+          </details>
+        )}
+      </article>
+    ))
+  }
+  <nav aria-label="Next" class="section next-steps">
+    <ul>
+      <li><a href={`/cases/${next.slug}`}>Next case: {next.title}</a></li>
+      <li><a href="/cases">All cases</a></li>
+      <li><a href="/testing">How the judging worked</a></li>
+      <li><a href="/#install">Install</a> <code>{install.skills}</code></li>
+    </ul>
+  </nav>
+  <script>
+    import '../../scripts/open-on-hash'
+  </script>
+</Base>

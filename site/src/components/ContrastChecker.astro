@@ -1,0 +1,54 @@
+---
+import { floor2, hex, ratio } from '../lib/contrast'
+import { checks } from '../lib/checks'
+
+// Rendered at build time for the default pair, so the panel is complete before any script runs.
+const fg = '#575b62'
+const bg = '#eae9e6'
+const r = floor2(ratio(hex(fg), hex(bg)))
+---
+
+<div class="checker frame" data-checker>
+  <div class="checker-inputs">
+    {
+      [
+        ['fg', 'Text or foreground', fg],
+        ['bg', 'Background', bg],
+      ].map(([id, label, value]) => (
+        <div class="field">
+          <label for={id}>{label}</label>
+          <div class="checker-row">
+            <input type="color" aria-label={`${label}, colour picker`} value={value} data-picker={id} />
+            <input id={id} type="text" spellcheck="false" autocomplete="off" value={value} aria-describedby={`${id}-hint`} data-text={id} />
+          </div>
+          <p id={`${id}-hint`} class="hint" data-hint={id}>Renders as {value} in sRGB.</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="checker-result" data-result>
+    <p class="checker-ratio"><span class="m">{r.toFixed(2)}:1</span></p>
+    <ul class="checker-verdicts">
+      {
+        checks.map((c) => (
+          <li>
+            <span class:list={['tag', { blocker: r < c.need }]}>{r >= c.need ? 'Pass' : 'Fail'}</span> {c.label}{' '}
+            <span class="muted">needs {c.need}:1, WCAG {c.sc}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p class="visually-hidden" role="status" data-said></p>
+
+  <div class="checker-sample" aria-hidden="true" data-sample style={`background:linear-gradient(${bg},${bg}),#fff;color:${fg}`}>
+    <p style="font-size:1rem">Reserve the drill for Saturday</p>
+    <p style="font-size:0.8125rem">Pickup from 9:00, side door, bring your card</p>
+  </div>
+</div>
+
+<script>
+  import '../scripts/checker'
+</script>

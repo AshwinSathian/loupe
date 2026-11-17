@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro'
+import { faqs } from '../lib/faqs'
+import { breadcrumb } from '../lib/site'
+
+const description =
+  'Questions about loupe: Apple affiliation, web apps, measurement, code changes, native apps, models, and privacy.'
+---
+
+<Base
+  title="FAQ"
+  description={description}
+  path="/faq"
+  card="faq"
+  schema={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+    breadcrumb(['FAQ', '/faq']),
+  ]}
+>
+  <header class="page-head">
+    <h1>Questions</h1>
+  </header>
+  <div class="prose">
+    {
+      faqs.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <div><p>{f.a}</p></div>
+        </details>
+      ))
+    }
+  </div>
+</Base>

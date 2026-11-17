@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro'
+import Command from '../components/Command.astro'
+import Loupe from '../components/Loupe.astro'
+import MeasuredHeading from '../components/MeasuredHeading.astro'
+import { steps } from '../lib/steps'
+import { specimen } from '../lib/specimen'
+import { results } from '../lib/results'
+import { blob, install, site } from '../lib/site'
+---
+
+<Base description={site.description}>
+  <section class="page-head hero">
+    <MeasuredHeading>A design review that shows its measurements.</MeasuredHeading>
+    <p class="lede">
+      loupe is a Claude Code skill. It reviews an interface against Apple’s Human Interface Guidelines and the research
+      around them. It measures what it can in the running app, says how strongly Apple states each rule it cites, and
+      tells you when a screen looks like every other template. It works on iOS, iPadOS and macOS apps and on the web.
+    </p>
+    <Command text={install.skills} label="install command" />
+    <p class="muted">
+      Run it in a terminal. Free and MIT-licensed. <a href="#install">Other ways to install, including the Claude Code plugin</a>.
+    </p>
+  </section>
+
+  <section class="section" aria-labelledby="specimen-h">
+    <header>
+      <h2 id="specimen-h">{specimen.spots.length} findings from a blind run</h2>
+      <p>
+        On a tool-lending library page, written for our tests by a separate model that was told not to read loupe’s
+        rules. Pick a finding to move the ring to it.
+      </p>
+    </header>
+    <Loupe />
+    <p><a href="/cases/lendwell">The whole report, next to the review written without loupe</a></p>
+  </section>
+
+  <section class="section" aria-labelledby="tags-h">
+    <header>
+      <h2 id="tags-h">Every finding has two tags</h2>
+    </header>
+    <div class="sheet-grid">
+      <div class="frame">
+        <div class="frame-label"><span>Impact</span><span>harm to the user</span></div>
+        <dl class="tag-defs">
+          <dt><span class="tag blocker">Blocker</span></dt>
+          <dd>
+            Needs evidence of one of these: a measured or source-confirmed WCAG A or AA failure; an Apple MUST on an
+            iPhone, iPad or Mac app whose breach stops the task, blocks an accessibility need or risks App Review
+            rejection; data loss; deceptive design; or a task that can’t be finished in a release build.
+          </dd>
+          <dt><span class="tag">Major</span></dt>
+          <dd>Feels wrong, non-native or generic. Judged issues stop here.</dd>
+          <dt><span class="tag">Minor</span> <span class="tag">Polish</span></dt>
+          <dd>Small costs, and finish.</dd>
+        </dl>
+      </div>
+      <div class="frame">
+        <div class="frame-label"><span>Apple column</span><span>how strongly it is stated</span></div>
+        <dl class="tag-defs">
+          <dt><span class="tag">MUST</span> <span class="tag">SHOULD</span> <span class="tag">CONSIDER</span></dt>
+          <dd>Copied from Apple’s wording. Never upgraded.</dd>
+          <dt><span class="tag">Web</span></dt>
+          <dd>An Apple rule translated to the web, or a WCAG-backed web rule.</dd>
+          <dt><span class="tag">Research</span> <span class="tag">Taste</span></dt>
+          <dd>Outside research where Apple is silent, and reviewer judgement, labelled as such.</dd>
+        </dl>
+      </div>
+    </div>
+    <p><a href="/method#rules-h">The full rules, quoted from the skill</a></p>
+  </section>
+
+  <section class="section" aria-labelledby="steps-h">
+    <header>
+      <h2 id="steps-h">The steps of a review</h2>
+      <p>Numbered as in the skill.</p>
+    </header>
+    <ol class="steps">
+      {
+        steps().map((s) => (
+          <li>
+            <span class="step-n">{s.n}</span>
+            <h3>{s.name}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <p><a href="/method">What it reads and measures, and its rules</a></p>
+  </section>
+
+  <section class="section" aria-labelledby="results-h">
+    <header>
+      <h2 id="results-h">{results.headline}</h2>
+      <p>{results.summary}</p>
+    </header>
+    <p><a href="/testing">Method, every pair, and the losses</a></p>
+  </section>
+
+  <section class="section" id="install" aria-labelledby="install-h">
+    <header>
+      <h2 id="install-h">Install</h2>
+    </header>
+    <div class="install-list">
+      <div class="field">
+        <h3>Inside Claude Code, as a plugin</h3>
+        <Command text={install.plugin} label="plugin install commands" quiet />
+      </div>
+      <div class="field">
+        <h3>In a terminal, for any agent that reads skills</h3>
+        <Command text={install.skills} label="skills CLI install command" quiet />
+      </div>
+      <div class="field">
+        <h3>Clone and link, so git pull updates it</h3>
+        <Command text={install.symlink} label="clone and link commands" quiet />
+      </div>
+    </div>
+    <p class="muted">
+      Then ask in plain words: “review the checkout flow at localhost:3000”, “does this screen look AI-made?”, “audit our
+      tokens”. Measuring a web app live needs the Playwright MCP server; without it loupe works from source and
+      screenshots and lists the measured checks as unverified. <a href={blob('README.md')}>README</a>.
+    </p>
+  </section>
+</Base>

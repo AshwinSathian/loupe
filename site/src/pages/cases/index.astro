@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro'
+import { cases } from '../../lib/cases'
+import { breadcrumb } from '../../lib/site'
+
+const description =
+  'Full loupe reports on three held-out fixtures (a flawed web page, a well-built control, a SwiftUI app), each next to the review written without the skill, and loupe’s reviews of this site.'
+---
+
+<Base title="Cases" description={description} path="/cases" card="cases" schema={[breadcrumb(['Cases', '/cases'])]}>
+  <header class="page-head">
+    <h1>Unedited reports</h1>
+    <p class="lede">
+      The first three cases are fixtures from the blind round. You can read loupe’s report from each model next to the
+      review the same model wrote without the skill, and see what the judges made of the pair. The fourth is loupe’s
+      reviews of this site.
+    </p>
+  </header>
+  <ol class="case-list">
+    {
+      cases().map((c) => (
+        <li class="frame">
+          <h2><a href={`/cases/${c.slug}`}>{c.title}</a></h2>
+          <p class="frame-label">{c.kind}</p>
+          <p>{c.summary}</p>
+        </li>
+      ))
+    }
+    <li class="frame">
+      <h2><a href="/specimen#second-h">This website</a></h2>
+      <p class="frame-label">loupe’s reviews of its own site</p>
+      <p>
+        Three reviews of the site you are reading: one before launch, one asking whether it looks AI-made, and one of the
+        Astro rebuild. Each comes with the fixes that followed.
+      </p>
+    </li>
+  </ol>
+</Base>

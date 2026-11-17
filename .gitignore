@@ -8,5 +8,6 @@ __pycache__/
 test-results/
 .loupe.md
 site/node_modules/
-site/out/
-site/.next/
+site/dist/
+site/.astro/
+site/.wrangler/

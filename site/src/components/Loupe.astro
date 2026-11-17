@@ -1,0 +1,68 @@
+---
+import { Image, getImage } from 'astro:assets'
+import shot from '../assets/lendwell-390.png'
+import { specimen } from '../lib/specimen'
+
+const { alt, width, height, spots, caption } = specimen
+// The ring magnifies the same optimised file the stage shows, so the browser fetches it once.
+const sheet = await getImage({ src: shot, format: 'webp', quality: 90, width })
+---
+
+<!--
+  A screenshot under a loupe. The findings are a tab list (arrow keys move between them); the ring is decoration
+  (aria-hidden) and follows the selected tab. Every finding is in the HTML, so the section reads without JavaScript.
+-->
+<figure
+  class="loupe"
+  data-loupe
+  data-src={sheet.src}
+  data-width={width}
+  data-height={height}
+  data-spots={JSON.stringify(spots.map((s) => ({ x: s.x, y: s.y })))}
+>
+  <div class="stage-marks">
+    <div class="loupe-stage">
+      <div class="loupe-sheet">
+        <Image src={shot} alt={alt} format="webp" quality={90} width={width} height={height} loading="lazy" decoding="async" />
+      </div>
+      <div class="loupe-ring ring" aria-hidden="true" hidden>
+        <svg class="loupe-cross" viewBox="0 0 168 168"><path d="M84 75v18M75 84h18"></path></svg>
+      </div>
+    </div>
+  </div>
+  <div class="loupe-panel">
+    <div class="loupe-list" role="tablist" aria-label="Findings" aria-orientation="vertical" hidden>
+      {
+        spots.map((s, n) => (
+          <button
+            type="button"
+            role="tab"
+            id={`loupe-tab-${n}`}
+            aria-selected={n === 0 ? 'true' : 'false'}
+            aria-controls={`loupe-detail-${n}`}
+            tabindex={n === 0 ? 0 : -1}
+          >
+            <span class="loupe-n">{n + 1}</span>
+            {s.title}
+          </button>
+        ))
+      }
+    </div>
+    {
+      spots.map((s, n) => (
+        <div class="loupe-detail" id={`loupe-detail-${n}`} role="tabpanel" aria-labelledby={`loupe-tab-${n}`} tabindex="0">
+          <h3>{s.title}</h3>
+          <p>
+            <span class:list={['tag', { blocker: s.impact === 'Blocker' }]}>{s.impact}</span> <span class="tag">{s.apple}</span>
+          </p>
+          <p>{s.evidence}</p>
+        </div>
+      ))
+    }
+  </div>
+  <figcaption class="muted">{caption}</figcaption>
+</figure>
+
+<script>
+  import '../scripts/loupe'
+</script>

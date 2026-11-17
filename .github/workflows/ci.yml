@@ -45,6 +45,7 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
         working-directory: site
-      # The build fails if a colour pair on the site drops below its WCAG threshold.
-      - run: npx next build
+      # Type-checks, builds, then runs the page, font, header and sitemap checks. The build also fails if a colour pair
+      # on the site drops below its WCAG threshold.
+      - run: npm test
         working-directory: site

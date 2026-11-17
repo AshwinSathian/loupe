@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro'
+import { html, section } from '../lib/md'
+import { article, blob, breadcrumb } from '../lib/site'
+
+const description =
+  'How loupe reviews an interface: the profile, category research, measurement, stress states, nine passes, the red team, and the rules that decide what counts as a Blocker.'
+const rules = html(section('SKILL.md', 'Rules'))
+const bar = html(section('references/augment/red-team.md', 'The rework bar'))
+---
+
+<Base
+  title="Method"
+  description={description}
+  path="/method"
+  card="method"
+  schema={[breadcrumb(['Method', '/method']), article('How loupe reviews an interface', description, '/method')]}
+>
+  <header class="page-head">
+    <h1>How loupe reviews</h1>
+    <p class="lede">
+      loupe treats Apple’s Human Interface Guidelines as the base and lets other research add to it, never replace it.
+      Each outside check says whether it adds to an Apple rule, covers ground Apple leaves open, or conflicts with Apple,
+      and a conflict is shown in the finding rather than settled quietly.
+    </p>
+  </header>
+
+  <div class="prose">
+    <h2>What it reads</h2>
+    <p>
+      The rules come from paraphrased digests of the HIG (snapshot 23 October 2026), Apple’s other design literature
+      (WWDC sessions, the Apple Style Guide, the App Review Guidelines, WebKit guidance), and outside research: WCAG 2.2,
+      Nielsen Norman Group, Baymard, GOV.UK, Material, Fluent, Carbon and the typography canon. A separate catalogue of
+      template tells is dated and kept apart from anything Apple says.
+    </p>
+    <p>
+      A review loads only the files its current pass needs. The skill’s instructions stay under five thousand tokens so
+      they survive context compaction in long reviews.
+    </p>
+
+    <h2>What it measures</h2>
+    <p>
+      On a running web app, one call measures the page at 390, 820 and 1440 pixels wide, in light and dark, with and
+      without reduced motion: text contrast after compositing every translucent layer, target sizes with the WCAG 2.5.8
+      spacing exception, type sizes, motion that ignores the reduced-motion setting, and the defaults that template-built
+      pages share. A second script measures the typefaces themselves: whether capital I and lowercase l can be told apart
+      at 12 pixels, x-height, tabular figures, and script coverage.
+    </p>
+    <p>
+      Anything it can’t measure, it lists under Unverified with what would verify it. You can run the measurement script
+      in your own browser on the <a href="/tools">tools page</a>.
+    </p>
+
+    <h2 id="rules-h">The rules, quoted from the skill</h2>
+    <p>
+      Quoted from <a href={blob('SKILL.md')}>SKILL.md</a> at build time, so this section can’t drift from the skill. It is
+      written for the agent, so a few terms need a key:
+    </p>
+    <dl class="key">
+      <dt><code>[Taste]</code></dt>
+      <dd>reviewer judgement, labelled as such.</dd>
+      <dt>“Apple silent”</dt>
+      <dd>Apple has no rule on it; the check comes from outside research.</dd>
+      <dt><code>release_stage</code></dt>
+      <dd>development or release, from the project’s profile file.</dd>
+      <dt><code>(26+)</code></dt>
+      <dd>checks that apply only to apps built with the iOS, iPadOS or macOS 26 SDK.</dd>
+      <dt>“step 7”</dt>
+      <dd>the last step, where it fixes the findings you pick.</dd>
+    </dl>
+  </div>
+  <details class="prose">
+    <summary>The whole Rules section, as the agent reads it</summary>
+    <div class="quoted" set:html={rules} />
+  </details>
+
+  <div class="prose">
+    <h2>When it proposes a rework</h2>
+    <p>
+      A red team that always finds a structural problem is noise. A rework has to clear this bar, from{' '}
+      <a href={blob('references/augment/red-team.md')}>red-team.md</a>, and “no rework warranted” is the expected answer
+      for a well-built product.
+    </p>
+  </div>
+  <details class="prose">
+    <summary>The rework bar, as the agent reads it</summary>
+    <div class="quoted" set:html={bar} />
+  </details>
+</Base>
