@@ -17,7 +17,7 @@ A screen, a flow, a design system, or a whole app with 5 or fewer screens (or 10
 ## Brief for each subagent
 
 - the confirmed profile contents (or the draft and its assumptions);
-- the screens and routes in scope, and the evidence paths: screenshots, and the measurement results (the path the harness saved the runner output to, or a scratch file the main thread writes the returned JSON to);
+- the screens and routes in scope, and the evidence paths: screenshots, and the measurement, keyboard and stress results (the path the harness saved each runner's output to, or a scratch file the main thread writes the returned JSON to);
 - `references/workflow-passes.md` (its pass sections) and its reference file paths, the conditional loads that apply (web-mapping, ux-research, product-gov-systems), and the instruction to read headings first and load only the sections that apply;
 - the Rules section of SKILL.md, including the Apple-column mapping, and the "Stance" section of `references/augment/red-team.md`;
 - the type-eval output path, to B (which writes the Type section) and D (legibility);
