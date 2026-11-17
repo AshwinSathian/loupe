@@ -1,5 +1,5 @@
 {
   "name": "loupe",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Design review that measures before it judges: checks UI and UX against Apple's Human Interface Guidelines, measures contrast, keyboard focus, reflow and text spacing in the running app, and flags template-made interfaces."
 }

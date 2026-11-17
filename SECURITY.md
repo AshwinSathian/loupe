@@ -9,3 +9,7 @@ loupe runs scripts in three places:
 If you find a way for a reviewed page, a repository, or a web search result to make the skill run commands, write files, or send data somewhere, please report it privately through [GitHub's private vulnerability reporting](https://github.com/AshwinSathian/loupe/security/advisories/new) rather than a public issue. Include the page or input that triggers it and what happened.
 
 Only the latest release is supported.
+
+## Releases
+
+`loupe-review` is published from GitHub Actions with npm trusted publishing, so each release since 2.0.2 carries signed provenance and the repository holds no npm token. Verify with `npm install loupe-review && npm audit signatures`. The package ships an `npm-shrinkwrap.json` from 2.1.0.

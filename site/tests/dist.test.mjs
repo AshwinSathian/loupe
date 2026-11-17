@@ -17,7 +17,7 @@ const exists = (url) => {
 }
 const route = (f) => f.replace(DIST, '').replace(/\.html$/, '').replace(/^\/index$/, '/')
 
-test('dist has every page', () => assert.equal(pages.length, 10))
+test('dist has every page', () => assert.equal(pages.length, 11))
 
 for (const file of pages) {
   const html = fs.readFileSync(file, 'utf8')

@@ -44,6 +44,9 @@
 /faq
   Cache-Control: public, max-age=60, stale-while-revalidate=600
   Link: <__FONT__>; rel=preload; as=font; type=font/woff2; crossorigin
+/compare
+  Cache-Control: public, max-age=60, stale-while-revalidate=600
+  Link: <__FONT__>; rel=preload; as=font; type=font/woff2; crossorigin
 
 # Hashed build output: never changes.
 /_astro/*

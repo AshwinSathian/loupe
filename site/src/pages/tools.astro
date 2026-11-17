@@ -65,7 +65,8 @@ const description =
       With <code>--baseline</code> it compares the run with a committed file and fails only on new findings. Finding ids
       come from the rule, the role, the text and the colours rather than the element’s position, so adding a list item
       doesn’t turn one finding into a new one and a fixed one. Write the baseline on the same machine image as the check:
-      fonts change text widths. The <a href={blob('README.md#the-cli')}>README</a> has a GitHub Actions workflow.
+      fonts change text widths. In GitHub Actions, use <a href="https://github.com/AshwinSathian/loupe-action">the Loupe
+      Review action</a>; the <a href={blob('README.md#the-cli-and-github-action')}>README</a> has a workflow.
     </p>
     <p class="hint">
       Version {site.version}. Point it only at pages you control, and keep secrets out of the job: the browser runs whatever

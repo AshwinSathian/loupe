@@ -10,6 +10,7 @@ const pages = [
   ['/testing', 'Testing', 'The pre-registered blind round: method, every pair, results and losses.'],
   ['/tools', 'Tools', 'A WCAG contrast checker and a bookmarklet that runs loupe’s measurement script on any page.'],
   ['/specimen', 'Specimen', 'This site’s own design system, measured, and loupe’s review of the site.'],
+  ['/compare', 'Compare', 'When to pick axe-core, Lighthouse, Pa11y, Impeccable or other tools instead of loupe, and what loupe does not do. Dated.'],
   ['/faq', 'FAQ', 'Apple affiliation, web apps, measurement, code changes, models, privacy.'],
 ]
 

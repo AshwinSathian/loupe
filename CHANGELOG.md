@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 (17 November 2026)
+
+- **Gemini CLI extension.** `gemini extensions install https://github.com/AshwinSathian/loupe` installs the skill. A first attempt with symlinks failed in testing (Gemini rewrites them to absolute paths into a temporary clone), so `skills/loupe/` holds real copies, kept in step by `tools/sync_extension.py` and checked in CI. Verified on Gemini CLI 0.68.0.
+- **Install docs for Codex, Cursor and Gemini CLI**, with what was checked for each. Codex CLI 0.169.0 and Gemini CLI 0.68.0 were run; Cursor was checked against its documentation only, because its CLI needs a login.
+- **Comparison page** ([docs/comparison.md](docs/comparison.md), on the site at /compare): when to pick axe-core, Lighthouse, Pa11y, Impeccable, Anthropic's frontend-design or Vercel's web-design-guidelines instead, and what loupe does not do. Facts were verified against each tool's own documentation and dated.
+- **Supply chain.** `loupe-review` ships an `npm-shrinkwrap.json`, so `npx loupe-review` installs the tested dependency tree. The README now says how to verify the signed provenance (`npm audit signatures`) and that the repository holds no npm token.
+- **GitHub Action.** [AshwinSathian/loupe-action](https://github.com/AshwinSathian/loupe-action) runs the CLI in a workflow, with baselines.
+- **README visual**, regenerated from a live run of the CLI by `tools/make-demo.mjs`.
+
 ## 2.0.2 (17 November 2026)
 
 - README reorganised after the READMEs of popular tools in the same space: install and a sample of real findings first, then why, what is measured, the CLI's options and exit codes, how it was tested, and what loupe will and won't do.

@@ -1616,3 +1616,13 @@ h3 {
 a {
   overflow-wrap: anywhere;
 }
+
+/* The comparison table: tool names stay whole; the table scrolls in its own box. */
+.compare td:first-child,
+.compare th:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+}
+.compare td:nth-child(2) {
+  min-width: 9rem;
+}

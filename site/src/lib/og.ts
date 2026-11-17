@@ -91,6 +91,7 @@ const pages: Record<string, [label: string, heading: string, blurb: string]> = {
   cases: ['Cases', 'Unedited reports', 'Full reports from three Claude models, next to the review written without the skill.'],
   testing: ['Testing', 'A pre-registered blind round', 'Three fixtures, three models, three judges, sealed keys, and every loss.'],
   tools: ['Tools', 'Measure it yourself', 'A WCAG contrast checker and a bookmarklet, running in your browser.'],
+  compare: ['Compare', 'How loupe compares', 'When to pick axe-core, Lighthouse, Impeccable or others instead, and what loupe does not do.'],
   faq: ['FAQ', 'Questions', 'Apple affiliation, web apps, measurement, code changes, models and privacy.'],
   specimen: ['Specimen', 'How this site is designed', 'The design system, measured, and loupe’s reviews of the site.'],
 }
