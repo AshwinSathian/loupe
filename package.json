@@ -1,14 +1,30 @@
 {
-  "name": "loupe",
-  "version": "2.0.0",
-  "description": "Measures pages the way a loupe design review does: contrast, targets, keyboard focus, names, reflow, text spacing and localization stress.",
-  "private": true,
-  "type": "module",
+  "name": "loupe-review",
+  "version": "2.0.1",
+  "description": "loupe's measuring without a model: contrast, targets, keyboard focus and traps, accessible names, reflow, text spacing and localization stress, with baselines for CI. Part of the loupe design-review skill for Claude Code.",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "design-review",
+    "keyboard",
+    "reflow",
+    "ci",
+    "playwright",
+    "claude-code",
+    "agent-skills"
+  ],
+  "homepage": "https://loupe.ashwinsathian.com",
+  "bugs": {
+    "url": "https://github.com/AshwinSathian/loupe/issues"
+  },
   "license": "MIT",
+  "author": "Ashwin Sathian (https://ashwinsathian.com/)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AshwinSathian/loupe.git"
   },
+  "type": "module",
   "bin": {
     "loupe": "bin/loupe.mjs"
   },
@@ -31,5 +47,8 @@
   },
   "dependencies": {
     "playwright": "1.64.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
