@@ -1,6 +1,6 @@
 {
   "name": "loupe-review",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "loupe's measuring without a model: contrast, targets, keyboard focus and traps, accessible names, reflow, text spacing and localization stress, with baselines for CI. Part of the loupe design-review skill for Claude Code.",
   "keywords": [
     "accessibility",
@@ -35,7 +35,8 @@
     "SKILL.md",
     "references",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "npm-shrinkwrap.json"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs && for t in test/test_*.py tools/test_tools.py; do python3 -I \"$t\" || exit 1; done",

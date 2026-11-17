@@ -29,8 +29,18 @@ test("every script and reference SKILL.md and the workflow files name exists", (
   for (const p of paths) assert.ok(existsSync(new URL(p, root)), `${p} is named but missing`);
 });
 
+test("Gemini extension manifest is valid, and no copy of the skill is committed under skills/", () => {
+  const m = JSON.parse(read("gemini-extension.json"));
+  assert.match(m.name, /^[a-z0-9-]+$/); // Gemini CLI: lowercase letters, numbers, dashes
+  assert.equal(m.version, JSON.parse(read("package.json")).version);
+  assert.ok(m.description.length > 20);
+  // A committed skills/loupe/ would be installed inside the skill by `npx skills add` and listed twice by Codex.
+  assert.ok(!existsSync(new URL("skills", root)), "skills/ must not exist; the extension ships as a release asset");
+});
+
 test("plugin, marketplace and package versions agree", () => {
   const v = JSON.parse(read("package.json")).version;
   assert.equal(JSON.parse(read(".claude-plugin/plugin.json")).version, v);
+  assert.equal(JSON.parse(read(".claude-plugin/marketplace.json")).plugins[0].version, v);
   assert.match(read("CHANGELOG.md"), new RegExp(`^## ${v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} `, "m"));
 });

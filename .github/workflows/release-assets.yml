@@ -1,0 +1,33 @@
+name: Release assets
+
+# Builds the Gemini CLI extension archive and attaches it to each GitHub release, which is what
+# `gemini extensions install https://github.com/AshwinSathian/loupe` installs from. See tools/build_extension.py.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  gemini-extension:
+    name: Gemini extension archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.release.tag_name }}
+      - name: Release tag matches the manifest version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: test "v$(python3 -c 'import json;print(json.load(open("gemini-extension.json"))["version"])')" = "$TAG"
+      - run: python3 -I tools/build_extension.py --out "$RUNNER_TEMP/ext"
+      - name: Attach the archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" "$RUNNER_TEMP/ext/loupe.tar.gz" --clobber --repo "$GITHUB_REPOSITORY"

@@ -52,6 +52,10 @@ If your change could alter what a review reports (a rule, a threshold, the workf
 
 Don't edit anything in `evals/heldout/`. It is the record of a pre-registered blind round, and `keys.sha256` pins the answer keys.
 
+## Releasing
+
+A release needs the same version in `package.json` (and `npm-shrinkwrap.json`), `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` and `gemini-extension.json`; `npm test` fails if they differ. Publishing a GitHub release then does two things from CI: `publish.yml` publishes `loupe-review` to npm with provenance, and `release-assets.yml` attaches the Gemini extension archive (`tools/build_extension.py`). Gemini CLI installs the latest *release*, so check `gemini extensions install https://github.com/AshwinSathian/loupe` after each one.
+
 ## Pull requests
 
 - Branch from `main`. `main` only takes changes through pull requests, and the Test check has to pass.

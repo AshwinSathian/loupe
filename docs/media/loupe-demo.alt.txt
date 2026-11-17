@@ -1,0 +1,1 @@
+Terminal running loupe-review on a settings page. It reports 2 failures: 2.1.2 Tab cycles inside 3 elements and cannot leave; 4.1.2 focusable button with no accessible name. Then 10 warnings, and exit code 1.

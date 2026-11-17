@@ -29,6 +29,8 @@ jobs:
       - run: npm test
       - name: Reference contents blocks are current
         run: python3 -I tools/toc.py --check
+      - name: Gemini extension archive builds
+        run: python3 -I tools/build_extension.py --check
 
   site:
     name: Site builds
