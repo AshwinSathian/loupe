@@ -5,7 +5,7 @@ import { readFileSync, mkdtempSync, writeFileSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { toFindings, diff, mdEscape } from "../lib/findings.mjs";
+import { toFindings, diff, mdEscape, mdCode } from "../lib/findings.mjs";
 
 const fixtures = new URL("./fixtures/", import.meta.url);
 let server, base;
@@ -84,8 +84,12 @@ test("findings: disabled, unmeasurable and spacing-exempt rows are not failures"
   assert.deepEqual(f.map((x) => [x.rule, x.severity]), [["target-goal", "warn"]]);
 });
 
-test("findings: markdown escaping neutralises headings, links, images and HTML", () => {
+test("findings: markdown escaping neutralises headings, links, autolinks, images, HTML and new lines", () => {
   assert.equal(mdEscape("## a ![i](u) <b>|"), "\\#\\# a \\!\\[i\\]\\(u\\) \\<b\\>\\|");
+  assert.equal(mdEscape("see https://x.io"), "see https\\:\\/\\/x\\.io");
+  assert.equal(mdEscape("a\n# b\u2028c"), "a \\# b c");
+  assert.equal(mdEscape("x".repeat(400)).length, 300);
+  assert.equal(mdCode("a`b|c\n## d"), "`a'b\\|c ## d`");
 });
 
 // WebKit and Firefox run when installed (npx playwright install webkit firefox); CI installs Chromium only.

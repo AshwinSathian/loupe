@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { platform, arch } from "node:os";
 import vm from "node:vm";
-import { toFindings, diff, mdEscape } from "../lib/findings.mjs";
+import { toFindings, diff, mdEscape, mdCode } from "../lib/findings.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
@@ -134,7 +134,7 @@ for (const [url, p] of Object.entries(pages)) {
   failing += counted.length;
   lines.push(`${fails.length} fail, ${p.findings.length - fails.length} warn` + (d ? `; against the baseline: ${d.new.length} new, ${d.fixed.length} fixed, ${d.still.length} still present` : ""), "");
   const isNew = d ? new Set(d.new.map((f) => f.id)) : null;
-  const row = (f) => `| ${isNew ? (isNew.has(f.id) ? "new" : "") + " | " : ""}${f.severity} | ${mdEscape(f.sc)} | ${mdEscape(f.detail)}${f.text ? ` "${mdEscape(f.text)}"` : ""} | \`${String(f.selector).replace(/`/g, "'").replace(/\|/g, "\\|")}\` |`;
+  const row = (f) => `| ${isNew ? (isNew.has(f.id) ? "new" : "") + " | " : ""}${f.severity} | ${f.sc} | ${mdEscape(f.detail)}${f.text ? ` "${mdEscape(f.text)}"` : ""} | ${mdCode(f.selector)} |`;
   if (p.findings.length) {
     lines.push(isNew ? "| | Severity | Criterion | Finding | Where |" : "| Severity | Criterion | Finding | Where |", isNew ? "|---|---|---|---|---|" : "|---|---|---|---|");
     for (const f of p.findings.slice(0, 60)) lines.push(row(f));
