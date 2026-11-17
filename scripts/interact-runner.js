@@ -12,11 +12,16 @@ async (page, opts = {}) => {
   //   the first; a cycle inside an open modal dialog is expected and reported with inDialog: true),
   //   positive tabindex values, and unnamed controls and images anywhere in the page (counted per role
   //   from the page's aria snapshot, which carries no selectors; focusable ones are named per stop).
-  // Options: maxStops (default 80), timeMs (default 15000), width (viewport width for the walk).
+  // Options: maxStops (default 80), timeMs (default 15000), width (viewport width for the walk), key
+  //   (default Tab; Alt+Tab in WebKit, which otherwise skips links and buttons as Safari does).
   // Side effects: focus moves (the page's focus and blur handlers run, as for a keyboard user) and the
   //   page scrolls. Nothing is clicked or typed. Focus is released and the scroll position and viewport
   //   are restored at the end.
   const maxStops = opts.maxStops ?? 80, timeMs = opts.timeMs ?? 15000;
+  // WebKit, like Safari, skips links and buttons on Tab unless Option is held.
+  let engine = "";
+  try { engine = page.context().browser().browserType().name(); } catch { /* persistent context */ }
+  const key = opts.key || (engine === "webkit" ? "Alt+Tab" : "Tab");
   const started = Date.now();
   const vp = page.viewportSize();
   if (opts.width) await page.setViewportSize({ width: opts.width, height: vp ? vp.height : 900 });
@@ -68,10 +73,21 @@ async (page, opts = {}) => {
   let trap = null, stuck = 0, last = null;
   try {
     for (let i = 0; i < maxStops && Date.now() - started < timeMs; i++) {
-      if (i > 0 || !preFocused) await page.keyboard.press("Tab");
+      if (i > 0 || !preFocused) await page.keyboard.press(key);
       const p = await page.evaluate(probe);
       if (!p) { if (stops.length) break; continue; } // focus left the document: the cycle is done
-      if (last && p.selector === last.selector) { if (++stuck >= 3) { trap = { selector: p.selector, kind: "focus does not move", inDialog: false }; break; } continue; }
+      if (last && p.selector === last.selector) {
+        if (++stuck < 3) continue;
+        // Firefox keeps focus on the last tabbable element at the end of the page: that is the end of
+        // the cycle, not a trap.
+        const isLast = await page.evaluate(() => {
+          const f = [...document.querySelectorAll('a[href],button,input,select,textarea,summary,iframe,[tabindex],[contenteditable="true"]')]
+            .filter((e) => e.tabIndex >= 0 && !e.disabled && e.getClientRects().length && !e.closest("[inert]"));
+          return f[f.length - 1] === document.activeElement;
+        });
+        if (!isLast) trap = { selector: p.selector, kind: "focus does not move", inDialog: false };
+        break;
+      }
       stuck = 0;
       if (seen.has(p.selector)) {
         // Wrapped. Back to the first stop is a normal cycle; back to a later one is a trap.

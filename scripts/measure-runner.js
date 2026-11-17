@@ -49,7 +49,7 @@ async (page, opts = {}) => {
   const vp = page.viewportSize();
   const out = [];
   try {
-    for (const width of [390, 820, 1440])
+    for (const width of opts.widths || [390, 820, 1440])
       for (const colorScheme of ["light", "dark"])
         for (const reducedMotion of ["no-preference", "reduce"]) {
           await page.setViewportSize({ width, height: vp ? vp.height : 900 });

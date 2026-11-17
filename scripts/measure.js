@@ -237,6 +237,8 @@
     const t = {
       selector: selectorOf(box),
       role: el.getAttribute("role") || (el.tagName === "INPUT" ? `input:${el.type}` : el.tagName.toLowerCase()),
+      // Visible or labelled text, for telling targets apart (not a computed accessible name).
+      label: clip((el.getAttribute("aria-label") || el.textContent || el.getAttribute("title") || (el.querySelector("img[alt]") || {}).alt || "").trim().replace(/\s+/g, " "), 40),
       width: Math.round(r.width * 10) / 10,
       height: Math.round(r.height * 10) / 10,
       under24: r.width < 24 || r.height < 24,
