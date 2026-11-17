@@ -7,9 +7,11 @@ async (page, opts = {}) => {
   //   Add full: true for every row of every combination: { skillDir: "...", full: true }.
   // The runner reads <skillDir>/scripts/measure.js through a detached file input (the code runs in a
   // vm context holding only `page`, with no require or fs) and evaluates it with page.evaluate, which
-  // strict CSP and Trusted Types do not block. It injects no <script> and leaves no globals or nodes.
+  // strict CSP and Trusted Types do not block. It injects no <script> and leaves no globals or nodes
+  // (an expando on each paused Animation object is deleted when it resumes).
   //
   // It measures widths 390, 820, 1440 x colorScheme light, dark x reducedMotion no-preference, reduce,
+  // holding running animations at their first frame while measuring and resuming them afterwards,
   // waiting two animation frames after each media/viewport change so matchMedia and resize listeners
   // (JS-applied themes, responsive classes) have run, and finishing CSS transitions they started.
   //
@@ -56,8 +58,19 @@ async (page, opts = {}) => {
           await page.emulateMedia({ colorScheme, reducedMotion });
           await settle();
           // Jump colour/layout transitions triggered by the media change to their end state.
-          await page.evaluate(() => { for (const a of document.getAnimations()) if (a instanceof CSSTransition) a.finish(); });
-          out.push({ width, colorScheme, reducedMotion, ...(await page.evaluate(`(${src})()`)) });
+          // Then hold running animations at their start for the measurement and resume them after, so a
+          // spinning or sliding element is measured in the same place every run.
+          await page.evaluate(() => {
+            for (const a of document.getAnimations()) {
+              if (a instanceof CSSTransition) { a.finish(); continue; }
+              if (a.playState === "running") { a.__loupeT = a.currentTime; a.pause(); a.currentTime = 0; }
+            }
+          });
+          try {
+            out.push({ width, colorScheme, reducedMotion, ...(await page.evaluate(`(${src})()`)) });
+          } finally {
+            await page.evaluate(() => { for (const a of document.getAnimations()) if ("__loupeT" in a) { a.currentTime = a.__loupeT; delete a.__loupeT; a.play(); } });
+          }
         }
   } finally {
     if (vp) await page.setViewportSize(vp);

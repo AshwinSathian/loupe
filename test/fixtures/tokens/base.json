@@ -1,0 +1,14 @@
+{
+  "color": {
+    "$type": "color",
+    "base": {
+      "ink": { "$value": { "colorSpace": "srgb", "components": [0.1, 0.1, 0.12], "alpha": 1, "hex": "#1a1a1f" } },
+      "paper": { "$value": "#ffffff" },
+      "grey": { "$value": { "colorSpace": "oklch", "components": [0.7, 0, "none"] } },
+      "brand": { "$value": { "colorSpace": "display-p3", "components": [1, 0, 0] } },
+      "rare": { "$value": { "colorSpace": "rec2020", "components": [0.5, 0.5, 0.5], "hex": "#777777" } }
+    },
+    "text": { "primary": { "$value": "{color.base.ink}" }, "muted": { "$value": "{color.base.grey}" }, "brand": { "$value": "{color.base.brand}" } },
+    "bg": { "surface": { "$value": "{color.base.paper}" } }
+  }
+}

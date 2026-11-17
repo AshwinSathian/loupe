@@ -1,0 +1,1 @@
+{ "color": { "$type": "color", "bg": { "surface": { "$value": { "colorSpace": "srgb", "components": [0.08, 0.08, 0.09] } } }, "text": { "primary": { "$value": "#f2f2f2" } } } }

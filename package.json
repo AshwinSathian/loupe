@@ -22,7 +22,7 @@
     "NOTICE"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs && python3 -I test/test_png_contrast.py && python3 -I test/test_contrast.py && python3 -I tools/test_tools.py"
+    "test": "node --test test/*.test.mjs && for t in test/test_*.py tools/test_tools.py; do python3 -I \"$t\" || exit 1; done"
   },
   "engines": {
     "node": ">=20"
