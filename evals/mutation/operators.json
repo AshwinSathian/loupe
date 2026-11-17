@@ -1,0 +1,194 @@
+{
+  "note": "Committed with operators.sha256 before the first run. Each operator patches base.html; defects must produce the rule at the severity given, decoys must not produce it. Thresholds sit at the WCAG boundaries.",
+  "operators": [
+    {
+      "id": "contrast-4.48",
+      "kind": "defect",
+      "expect": {
+        "rule": "contrast",
+        "severity": "fail"
+      },
+      "describe": "Intro text #777 on white (4.48:1, needs 4.5)",
+      "css": "#intro{color:#777}"
+    },
+    {
+      "id": "contrast-dark-only",
+      "kind": "defect",
+      "expect": {
+        "rule": "contrast",
+        "severity": "fail"
+      },
+      "describe": "Muted text too dim in dark mode only",
+      "css": "@media (prefers-color-scheme: dark){:root{--muted:#5a606a}}"
+    },
+    {
+      "id": "target-23",
+      "kind": "defect",
+      "expect": {
+        "rule": "target-size",
+        "severity": "fail"
+      },
+      "describe": "Two 23 px buttons side by side, 2 px apart",
+      "css": "#actions button{min-width:0;min-height:0;width:23px;height:23px;padding:0}#actions{gap:2px}"
+    },
+    {
+      "id": "name-removed",
+      "kind": "defect",
+      "expect": {
+        "rule": "name",
+        "severity": "fail"
+      },
+      "describe": "Icon-only share button loses its aria-label",
+      "replace": [
+        " aria-label=\"Share settings\"",
+        ""
+      ]
+    },
+    {
+      "id": "focus-outline-none",
+      "kind": "defect",
+      "expect": {
+        "rule": "focus-visible",
+        "severity": "warn"
+      },
+      "describe": "Focus ring removed everywhere",
+      "css": ":focus-visible{outline:none}:focus{outline:none}"
+    },
+    {
+      "id": "sticky-cover",
+      "kind": "defect",
+      "expect": {
+        "rule": "focus-obscured",
+        "severity": "fail"
+      },
+      "describe": "Fixed cookie banner over the bottom 40% of the window covers the footer link",
+      "css": "#cookie{position:fixed;left:0;right:0;bottom:0;height:40vh;background:var(--bg);border-top:1px solid var(--line)}",
+      "html": "<div id=\"cookie\">We use cookies.</div>"
+    },
+    {
+      "id": "trap",
+      "kind": "defect",
+      "expect": {
+        "rule": "keyboard-trap",
+        "severity": "fail"
+      },
+      "describe": "Tab from the share button jumps back to Save",
+      "script": "document.getElementById('share').addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.shiftKey){e.preventDefault();document.getElementById('save').focus()}})"
+    },
+    {
+      "id": "fixed-width",
+      "kind": "defect",
+      "expect": {
+        "rule": "reflow-page-scroll",
+        "severity": "warn"
+      },
+      "describe": "Alerts card fixed at 600 px",
+      "css": "#alerts{width:600px}"
+    },
+    {
+      "id": "nowrap-tabs",
+      "kind": "defect",
+      "expect": {
+        "rule": "pseudo-clipped",
+        "severity": "warn"
+      },
+      "describe": "Tabs clip with an ellipsis at a fixed width",
+      "css": "nav a{display:inline-block;line-height:2.75rem;width:7.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
+    },
+    {
+      "id": "fixed-height",
+      "kind": "defect",
+      "expect": {
+        "rule": "spacing-clipped",
+        "severity": "warn"
+      },
+      "describe": "About text in a fixed-height box",
+      "css": "#about-text{height:3rem;overflow:hidden}"
+    },
+    {
+      "id": "px-text",
+      "kind": "defect",
+      "expect": {
+        "rule": "text-fixed-px",
+        "severity": "warn"
+      },
+      "describe": "Body text set in px",
+      "css": "body{font-size:15px}"
+    },
+    {
+      "id": "positive-tabindex",
+      "kind": "defect",
+      "expect": {
+        "rule": "positive-tabindex",
+        "severity": "warn"
+      },
+      "describe": "Privacy link given tabindex=2",
+      "replace": [
+        "id=\"privacy\"",
+        "id=\"privacy\" tabindex=\"2\""
+      ]
+    },
+    {
+      "id": "decoy-contrast-4.54",
+      "kind": "decoy",
+      "absent": "contrast",
+      "describe": "Intro text #767676 (4.54:1): looks grey, passes",
+      "css": "#intro{color:#767676}"
+    },
+    {
+      "id": "decoy-target-24",
+      "kind": "decoy",
+      "absent": "target-size",
+      "describe": "Two 24 px buttons 2 px apart: the minimum, passes",
+      "css": "#actions button{min-width:0;min-height:0;width:24px;height:24px;padding:0}#actions{gap:2px}"
+    },
+    {
+      "id": "decoy-lone-small",
+      "kind": "decoy",
+      "absent": "target-size",
+      "describe": "One 16 px button alone in its row: passes by the spacing exception",
+      "css": "#share{min-width:0;min-height:0;width:16px;height:16px;padding:0;margin-left:3rem}"
+    },
+    {
+      "id": "decoy-labelled-icon",
+      "kind": "decoy",
+      "absent": "name",
+      "describe": "Icon button named by aria-labelledby instead of aria-label",
+      "replace": [
+        " aria-label=\"Share settings\"",
+        " aria-labelledby=\"share-l\"><span hidden id=\"share-l\">Share settings</span"
+      ]
+    },
+    {
+      "id": "decoy-focus-within",
+      "kind": "decoy",
+      "absent": "focus-visible",
+      "describe": "Ring drawn on the field wrapper with :focus-within",
+      "css": "input:focus-visible,select:focus-visible{outline:none}label+select,label+input{outline-offset:0}#alerts:focus-within{box-shadow:0 0 0 3px var(--accent)}"
+    },
+    {
+      "id": "decoy-modal",
+      "kind": "decoy",
+      "absent": "keyboard-trap",
+      "describe": "An open modal dialog keeps focus inside, as it should",
+      "html": "<dialog id=\"d\"><p>Discard changes?</p><button type=\"button\">Discard</button><button type=\"button\">Keep editing</button></dialog>",
+      "script": "document.getElementById('d').showModal()"
+    },
+    {
+      "id": "decoy-wide-table",
+      "kind": "decoy",
+      "absent": "reflow-page-scroll",
+      "describe": "A wide data table at 320 px (exempt 2D content)",
+      "html": "<main><table style=\"width:700px\"><tr><th>Time</th><th>Height</th><th>Period</th><th>Direction</th><th>Wind</th></tr></table></main>"
+    },
+    {
+      "id": "decoy-partly-covered",
+      "kind": "decoy",
+      "absent": "focus-obscured",
+      "describe": "A fixed bar covers the lower half of the footer link only (passes 2.4.11, AA)",
+      "css": "#cookie{position:fixed;left:0;right:0;bottom:0;background:var(--bg)}#privacy{display:inline-block}",
+      "html": "<div id=\"cookie\"></div>",
+      "script": "const r=document.getElementById('privacy').getBoundingClientRect();document.getElementById('cookie').style.height=(innerHeight-(r.top+r.height/2))+'px'"
+    }
+  ]
+}
