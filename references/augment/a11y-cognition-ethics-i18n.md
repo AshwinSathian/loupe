@@ -40,7 +40,7 @@ Test tags inside each check: (DOM) automatable against the rendered DOM or acces
 - [CONSIDER] Use WCAG 3 only as directional input. Never cite it as a pass/fail authority. (manual) — Apple silent
 
 ## Contrast: APCA
-**Intent**: WCAG 2's ratio, per the APCA docs, "overstates contrast for dark colors, so 4.5:1 can be functionally unreadable when one color is near black". That makes it a weak guide for dark mode. APCA's Lc is perceptually uniform and depends on polarity: text on background is not symmetric. Source: https://git.apcacontrast.com/documentation/APCA_in_a_Nutshell.html (fetched 2026). Apple and WCAG ratios are not in conflict with APCA: run both and keep the stricter result.
+**Intent**: WCAG 2's ratio, per the APCA docs, "overstates contrast for dark colors, so 4.5:1 can be functionally unreadable when one color is near black". That makes it a weak guide for dark mode. APCA's Lc is perceptually uniform and depends on polarity: text on background is not symmetric. Source: https://git.apcacontrast.com/documentation/APCA_in_a_Nutshell.html (fetched 2026). Apple and WCAG ratios are not in conflict with APCA: run both. WCAG 2 decides pass or fail; APCA adds advisory findings.
 
 Lc thresholds (Bronze/Silver; sizes at Helvetica/Arial reference weights; px = CSS px):
 
@@ -56,7 +56,7 @@ Lc thresholds (Bronze/Silver; sizes at Helvetica/Arial reference weights; px = C
 
 **Checks**
 - [MUST] Legal compliance still uses WCAG 2 ratios (4.5:1 body, 3:1 large and non-text). APCA is not a substitute for compliance. Contrast ratios are measured by measure.js. (DOM) — adds to Apple
-- [SHOULD] Run APCA in addition for dark mode, thin weights (300 and below) and small text, and fail anything that passes WCAG 2 but sits below the APCA row for its size and weight. (screenshot) or (DOM) using computed colour plus font-size and weight. (Apple specifies ratios, Dynamic Type and Increase Contrast, and its web translation names APCA only as an extra check; the weight-aware thresholds above are what covers thin SF weights.) — adds to Apple
+- [SHOULD] Run APCA in addition for dark mode, thin weights (300 and below) and small text, and report anything that passes WCAG 2 but sits below the APCA row for its size and weight as advisory (Research, Minor at most, never a Blocker; APCA is not normative in the 3 March 2026 WCAG 3 draft), with the Lc and the tool that computed it. (screenshot) or (DOM) using computed colour plus font-size and weight. (Apple specifies ratios, Dynamic Type and Increase Contrast, and its web translation names APCA only as an extra check; the weight-aware thresholds above are what covers thin SF weights.) — adds to Apple
 - [SHOULD] Light grey text at 300 weight on white ("elegant" UI) can pass 4.5:1 and still fall below Lc 75 for body text. Flag it. (DOM) — adds to Apple
 - [CONSIDER] Use the Lc 90 maximum for large bold: pure white on pure black at headline size is over-contrasted and causes halation in dark mode. (screenshot) — adds to Apple
 
