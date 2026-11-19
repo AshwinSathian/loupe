@@ -51,6 +51,14 @@ Tag legend: [MUST] = finding is a defect; [SHOULD] = strong recommendation; [CON
 
 **Principles/checks.** [SHOULD] The skill should not rely on its own aesthetic taste for recommendations; its taste is the median. Recommendations must be derived from inputs specific to the product (subject matter, user, content, existing brand assets), and checked against the tells catalog before being proposed.
 
+### A4b. Measured convergence of generated UI, and fixation (added November 2026)
+
+**Why it matters.** A4 was background from search summaries. These put numbers on it.
+- Rusia, Bhole, Gupta, Dey, "Design Creativity Bench: Measuring creativity in LLM-Generated UI", arXiv 2610.11539 (October 2026), preprint, abstract read. Appropriateness above 90% for all models (best 99.2%; human 98.0%). Originality between outputs of two different models 0.592, between a human's and a model's 0.764. Creative range across product domains: models 0.581, humans 0.902.
+- Wadinambiarachchi, Kelly, Pareek, Zhou, Velloso, "The Effects of Generative AI on Design Fixation and Divergent Thinking", CHI 2024, abstract read. N = 60. An AI image generator during ideation increased fixation on the initial example and produced fewer ideas with less variety and originality than a baseline.
+
+**Principles/checks.** [SHOULD] Derive directions from the product's material before showing or generating examples. Switching to another model is not a fix for sameness.
+
 ### A5. The Tailwind indigo story and the slop essays (2025-2026)
 
 **Why it matters.** Gives a concrete, citable mechanism. prg.sh ("Why Your AI Keeps Building the Same Purple Gradient Website", Oct 2025): Adam Wathan apologized in August 2025 for making every Tailwind UI button `bg-indigo-500` five years earlier; the post argues training data from 2019-2024 taught models "modern web design = purple buttons." Its tells: Inter/Roboto, purple/indigo accents, centered hero with CTA, three icon boxes in a grid, white/light-gray background, rounded corners everywhere, shadows "at exactly 0.1 opacity". Canatselis ("Spot the Slop", July 2026) defines slop as "design with no author" and lists: opinionless type, decorative purple-blue gradients, headlines that fit any company, uniform padding/radius/card height, missing unhappy-path states, absent-or-identical motion, everything visible at once, and the left-edge colored accent line on panels. Several 2026 guides warn that swapping one default triggers a *second* default (warm cream + terracotta).

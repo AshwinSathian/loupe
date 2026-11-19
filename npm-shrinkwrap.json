@@ -1,12 +1,12 @@
 {
   "name": "loupe-review",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "loupe-review",
-      "version": "2.1.1",
+      "version": "2.2.0",
       "license": "MIT",
       "dependencies": {
         "playwright": "1.64.1"

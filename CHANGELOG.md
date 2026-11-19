@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0 (19 November 2026)
+
+- **Guardrails in the Offer.** A fix stops one instance. For each root-cause cluster and each measured failure that could come back, the Offer now names a check that would catch the next one, chosen from what the repo already runs: `loupe-review` with a baseline in CI, a rule in the existing lint config, or a token or component that removes the error class. A guardrail that needs a new dependency says so. This follows resolution 21 of the No AI Slop manifesto (AI Engineer Code Summit, November 2026): a mistake a machine can catch is left to the machine.
+- **Additive-drift check in the softness audit.** The red team counts proposals that add something against proposals that remove something. If nothing removes, it runs the delete test again on the primary screens. People overlook subtractive changes (Adams et al., *Nature*, 2021), and GPT-4 does so more than people, most of all when told to "improve" (Uhler et al., *Communications Psychology*, 2026).
+- **Step 7 prefers the removal** when a removal and an addition fix a finding equally, and runs the slop scan on its own diff before calling a fix done.
+- **Distinctiveness evidence.** Design Creativity Bench (preprint, October 2026) measured generated UI as appropriate but much less varied than human work, with two different models more alike than a model and a human. Added with a design-fixation result from CHI 2024.
+- Case A run on the changed skill: [evals/results/2026-11-19.md](evals/results/2026-11-19.md).
+- The site's method page explains the softness audit and the guardrails, and quotes the softness audit from `red-team.md` at build time.
+
 ## 2.1.1 (17 November 2026)
 
 - `loupe-review` now treats a page that answers HTTP 400 or higher as a load error (exit code 2). Before, it measured the error page, which has few problems of its own, so a mistyped URL or a broken deploy passed. `--allow-error-status` measures such pages anyway. Found by the post-build review of the GitHub Action.
