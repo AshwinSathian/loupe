@@ -12,7 +12,7 @@ const bodies: Record<string, string> = {
   '4 Passes': 'Nine passes against Apple’s guidance, ending with a red team that attacks the premise, the flows and its own draft.',
   '5 Whole-app split': 'Splits a large app across subagents, then merges the results with a fresh red team.',
   '6 Report': 'Findings with two tags, the landscape, a distinctiveness verdict, up to three reworks, a table of how each check was done, and what it couldn’t verify.',
-  '7 Offer fixes': 'Edits nothing until you pick findings by number. Then fixes those and measures again.',
+  '7 Offer fixes': 'Edits nothing until you pick findings by number. Then fixes those, taking the removal when a removal and an addition would both work, checks its own diff for template tells, and measures again. For anything that could come back, it names the check that would catch it next time, from tools the repo already runs.',
 }
 
 export const steps = () => {

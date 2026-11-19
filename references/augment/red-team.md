@@ -65,6 +65,7 @@ The red team does not replace the Apple passes or change how Impact is assigned.
 **Checks**
 - [Taste] Group all findings by cause, asking "why" until two or more findings share an answer (a missing token layer, a marketing template reused as the app shell, no state model for async data, forms built without a field component). — Apple silent
 - [Taste] A cluster of three or more findings with one cause, where fixing each row leaves the cause in place, is a rework candidate. Name the finding numbers in the rework. — Apple silent
+- [Taste] A cause that would produce the same finding again after every row is fixed needs a guardrail as well as a fix: the automated check, lint rule, token or component that catches the next instance. A mistake a machine can catch is left to the machine (No AI Slop manifesto, AIE Code Summit, November 2026, resolution 21). Guardrails go in the Offer, not the Findings table. — Apple silent
 
 ## The rework bar
 **Intent**: keeps the red team aggressive without inventing overhauls. A rework is proposed only when at least one condition holds, and the report states which one.
@@ -107,6 +108,7 @@ A rework clears the bar when at least one of these holds:
 - [Taste] Rating drift: a report of only Minor and Polish rows on a product with a `default-assembled` verdict, or on a core flow the red team could not walk cleanly, is suspect. Recheck the top rows against the Impact rules; raise only what the rules support. — Apple silent
 - [Taste] Missing structural answer: if the rework bar is met and the report proposes no rework, add one. If the report proposes a rework that does not clear the bar, cut it. — Apple silent
 - [Taste] Self-consistency: every rewrite, voice sample and enhancement obeys the profile's `voice` (we_policy, contractions, casing, spelling) and every rule the report itself flags. A rewrite that commits the error its own finding names is fixed before the report goes out. — Apple silent
+- [Taste] Additive drift: count the fixes, enhancements and reworks that add something (an element, a step, a setting, a feature, an animation) and those that remove or merge something. People asked to improve a design overlook subtractive changes unless prompted to consider them (Adams, Converse, Hales and Klotz, "People systematically overlook subtractive changes", Nature 592, 2021). Models lean further: across four preregistered experiments GPT-4 chose additive solutions more often than people did, and more often still when the instruction said "improve" rather than "edit" (Uhler et al., Communications Psychology, 2026). A design review is an "improve" instruction. If nothing removes, run the delete test (attack ladder layer 4) again on the primary screens and report each removal the evidence supports. Never invent one to balance the count. — Apple silent
 - [Taste] Praise padding: no "great job", no strengths list unless the user asked for one. One line naming what to keep is allowed when a rework would otherwise destroy it. — Apple silent
 
 ## Red flags
@@ -119,4 +121,5 @@ These thoughts mean the red team is going soft, or going overboard:
 | "Bold reworks show ambition" | A rework without a bar condition is noise. Downgrade or drop it. |
 | "I'll suggest a command palette / dark mode / AI feature" | Only if it traces to this product's job and landscape. Otherwise it is a trend default. |
 | "The peer does it, so this product should too" | Peers show the mechanism and the convention. Copying the look adds the product to the clone group. |
+| "Every proposal adds something" | Run the delete test again. Removing an element, a step or a setting is a valid fix and a valid enhancement. |
 | "I should balance criticism with praise" | No praise padding. Name what to keep only when a rework would lose it. |

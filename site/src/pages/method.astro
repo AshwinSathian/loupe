@@ -7,6 +7,7 @@ const description =
   'How loupe reviews an interface: the profile, category research, measurement, a keyboard walk, stress states, nine passes, the red team, and the rules that decide what counts as a Blocker.'
 const rules = html(section('SKILL.md', 'Rules'))
 const bar = html(section('references/augment/red-team.md', 'The rework bar'))
+const softness = html(section('references/augment/red-team.md', 'Softness audit'))
 ---
 
 <Base
@@ -101,5 +102,26 @@ const bar = html(section('references/augment/red-team.md', 'The rework bar'))
   <details class="prose">
     <summary>The rework bar, as the agent reads it</summary>
     <div class="quoted" set:html={bar} />
+  </details>
+
+  <div class="prose">
+    <h2>How it checks its own report</h2>
+    <p>
+      Before the report goes out, the red team attacks the draft. It rewrites hedged findings as claims or drops them,
+      reruns “would this fit any product?” on every row, and counts how many proposals add something against how many
+      remove something. People asked to improve a design tend to overlook removals (Adams and colleagues, <em>Nature</em>,
+      2021), and GPT-4 does so more than people, most of all when told to “improve” (Uhler and colleagues,
+      <em>Communications Psychology</em>, 2026), so a report in which every proposal adds gets a second delete
+      test on the primary screens.
+    </p>
+    <p>
+      A fix only stops one instance. When a cause would produce the same finding again, the offer names a guardrail
+      too: <code>loupe-review</code> with a baseline in CI, a rule in the lint config the repo already has, or a token or
+      component that makes the error impossible. It doesn’t add a dependency unless you ask.
+    </p>
+  </div>
+  <details class="prose">
+    <summary>The softness audit, as the agent reads it</summary>
+    <div class="quoted" set:html={softness} />
   </details>
 </Base>
