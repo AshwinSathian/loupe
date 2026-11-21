@@ -2,7 +2,7 @@
 
 Checked 17 November 2026. What this page says about other tools comes from their own READMEs and documentation, linked at the end, and the star counts are from that day. If something here is out of date, [open an issue](https://github.com/AshwinSathian/loupe/issues/new/choose).
 
-loupe is two things: a design-review skill for coding agents (built and tested in Claude Code; installs for Codex and Gemini CLI were checked by running those tools, Cursor's against its documentation), and `loupe-review`, a CLI that runs the skill's browser measurements without a model. It doesn't replace the tools below. Most of them do the job they were built for better than loupe would.
+loupe is two things: a design-review skill for coding agents (a full review has only been run in Claude Code; installs for Codex and Gemini CLI were checked by running those tools, Cursor's against its documentation), and `loupe-review`, a CLI that runs the skill's browser measurements without a model. It doesn't replace the tools below. Most of them do the job they were built for better than loupe would.
 
 ## Pick something else when
 

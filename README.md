@@ -14,7 +14,7 @@ Then ask in plain words, from the repo you want reviewed: *"review the checkout 
 
 *Real findings from `loupe-review` on [a fixture page](evals/fixtures/keyboard-app/index.html), redrawn as a terminal by [tools/make-demo.mjs](tools/make-demo.mjs): the URL is an example (the run used a local port), the warnings are summarised, and the failing rows are as printed.*
 
-iOS, iPadOS, macOS, iPhone Duo and the web, in SwiftUI, UIKit, React, Next.js, React Native, Expo, Angular, Vue or plain HTML. Built and tested in Claude Code. It also installs in [Codex, Cursor and Gemini CLI](#other-agents), and its measuring runs anywhere as [a CLI and a GitHub Action](#the-cli-and-github-action).
+iOS, iPadOS, macOS, iPhone Duo and the web, in SwiftUI, UIKit, React, Next.js, React Native, Expo, Angular, Vue or plain HTML. It installs in Claude Code, and also in [Codex, Cursor and Gemini CLI](#other-agents), and its measuring runs anywhere as [a CLI and a GitHub Action](#the-cli-and-github-action).
 
 **[loupe.ashwinsathian.com](https://loupe.ashwinsathian.com)** · [Method](https://loupe.ashwinsathian.com/method) · [Cases](https://loupe.ashwinsathian.com/cases) · [How it was tested](https://loupe.ashwinsathian.com/testing) · [Tools](https://loupe.ashwinsathian.com/tools)
 
